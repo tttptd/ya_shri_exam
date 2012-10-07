@@ -1,0 +1,75 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+/**************************************/
+
+a:link {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: rgba(0, 0, 200, .2);
+	color: rgb(0, 0, 200);
+	text-decoration: none;
+}
+a:visited {
+	border-color: rgba(220, 0, 220, .2);
+	color: rgb(153, 0, 153);
+}
+a:hover,
+a:visited:hover {
+	border-color: rgba(255, 0, 0, .4);
+	color: rgb(255, 0, 0) !important;
+	text-decoration: none;
+}
+a:active,
+a:focus {
+	outline: none;
+	-moz-outline-style: none;
+	-webkit-outline-style: none;
+}
+a.b-local {
+	border-bottom-style: dotted;
+	border-bottom-color: #00f;
+}
+a.b-local:hover {
+	border-color: #f00;
+	color: #f00;
+}
+a.b-no {
+	border-bottom-width: 0;
+}
+
+::-moz-selection {
+	background-color: #0a246a;
+	color: #fff;
+}
+::selection {
+	background-color: #0a246a;
+	color: #fff;
+}
+
+/**************************************/
+
+.b-noselect {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/**************************************/
+
+.b-clear:after {
+	clear: both;
+}
+.b-clear:before,
+.b-clear:after {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+
+/**************************************/

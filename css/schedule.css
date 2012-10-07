@@ -1,0 +1,92 @@
+.b-calendar {
+	padding: 30px 60px;
+	width: 860px;
+}
+
+
+
+.b-month {
+	padding-top: 40px;
+}
+.b-month:first-child {
+	padding-top: 0;
+}
+.b-month__name {
+	font-size: 20px;
+	padding: 0 0 10px;
+}
+
+
+
+.b-day {
+	width: 121px;
+	height: 150px;
+	float: left;
+	border-left: 1px solid rgba(0, 0, 0, .04);
+	border-bottom: 1px solid rgba(0, 0, 0, .04);
+	margin-top: 6px;
+	overflow: hidden;
+}
+.b-day:last-child,
+.b-day_sun {
+	border-right: 1px solid rgba(0, 0, 0, .04);
+}
+.b-day_sat,
+.b-day_sun {
+	background: rgba(0, 0, 0, .03);
+	color: red;
+}
+.b-day_mon {
+	clear: both;
+}
+.b-day_tue:first-child {
+	margin-left: 122px;
+}
+.b-day_wed:first-child {
+	margin-left: 244px;
+}
+.b-day_thu:first-child {
+	margin-left: 366px;
+}
+.b-day_fri:first-child {
+	margin-left: 488px;
+}
+.b-day_sat:first-child {
+	margin-left: 610px;
+}
+.b-day_sun:first-child {
+	margin-left: 732px;
+}
+
+.b-day__name {
+	line-height: 14px;
+	text-align: right;
+	padding: 10px;
+	background: rgba(255, 244, 147, .7);
+}
+.b-day__dayofweek {
+	font-size: 11px;
+}
+.b-day__dayofmonth {
+	font-size: 14px;
+}
+
+.b-day__lectures {
+	min-height: 116px;
+	cursor: pointer;
+}
+
+.b-lecture {
+	background: rgba(91, 155, 255, .5);
+	border-radius: 3px;
+	font-size: 10px;
+	color: #333;
+	padding: 2px;
+	border: 1px solid transparent;
+}
+.b-lecture:hover {
+	background: rgba(91, 155, 255, .8);
+	border-color: rgba(91, 155, 255, 1);
+}
+
+

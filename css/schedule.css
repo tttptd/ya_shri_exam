@@ -76,6 +76,9 @@
 	cursor: pointer;
 }
 
+
+
+
 .b-lecture {
 	background: rgba(91, 155, 255, .5);
 	border-radius: 3px;
@@ -88,5 +91,59 @@
 	background: rgba(91, 155, 255, .8);
 	border-color: rgba(91, 155, 255, 1);
 }
+.b-lecture_dirty {
+	background: rgba(255, 202, 157, .5);
+	border-color: rgba(255, 202, 157, 1);
+}
+.b-lecture_dirty:hover {
+	background: rgba(255, 202, 157, .8);
+	border-color: rgba(255, 202, 157, 1);
+}
+
+
+
+
+.b-form-lecture-edit {
+	font-size: 12px;
+	display: none;
+	position: absolute;
+	border: 1px solid #71a9ff;
+	background: #a5d3ff;
+	padding: 10px;
+	border-radius: 5px;
+	width: 230px;
+}
+.b-form__field-wrapper {
+	text-align: right;
+	padding-bottom: 4px;
+}
+.b-form__field-wrapper:last-child {
+	padding-bottom: 0;
+}
+.b-form__field-label {
+	margin-right: 4px;
+	vertical-align: top;
+	line-height: 20px;
+	display: inline-block;
+}
+.b-form__field-label_newline {
+	display: block;
+	text-align: left;
+}
+.b-form__field-input {
+	width: 140px;
+	border: 1px solid rgba(128, 128, 128, .5);
+	font-size: 10px;
+}
+.b-form__field-input:invalid {
+	background: #ffc7ca;
+}
+.b-form__field_textarea {
+	width: 100%;
+}
+
+
+
+
 
 

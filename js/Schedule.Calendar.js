@@ -4,10 +4,13 @@
 
 Schedule.Calendar = function( $applyTo, config ) {
 	var defaultConfig = {
-		fromDt: new Date( 2010, 8 ), // дата начала календаря
-		tillDt: new Date( 2020, 11, 31 ) // дата конца каландаря
-	};
+				fromDt: new Date( 2010, 8 ), // дата начала календаря
+				tillDt: new Date( 2020, 11, 31 ) // дата конца каландаря
+			};
+
 	this.config = $.extend( defaultConfig, config );
+
+	this.lastLecture = null; // последняя добавленная лекция
 
 	this.render( $applyTo );
 }
@@ -27,9 +30,9 @@ Schedule.Calendar.prototype.DAYSOFWEEK = {
 	}
 }
 
-Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = '.b-day__lectures'; // класс элемента-контейнера лекций
+Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures'; // класс элемента-контейнера лекций (без точки!)
 
-Schedule.Calendar.prototype.CALENDAR_CLASS = '.b-calendar'; // класс родительского элемента расписания
+Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar'; // класс родительского элемента расписания (без точки!)
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = '' +
 	'<div class="b-calendar">' +
@@ -54,7 +57,11 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = '' +
 '';
 
 
-
+/**
+ * [render description]
+ * @param  {[type]} $applyTo [description]
+ * @return {[type]}          [description]
+ */
 Schedule.Calendar.prototype.render = function( $applyTo ) {
 	var dayObj, monthObj,
 			dayOfWeekTmp,
@@ -91,24 +98,34 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 	// создаём расписание по шаблону
 	$applyTo.html( calendarTemplateCompiled( calendarObj ) );
 
-	this.$element = $applyTo.find( this.CALENDAR_CLASS );
+	this.$element = $applyTo.find( '.' + this.CALENDAR_CLASS );
 
 	// слушаем клики по дням
 	this.$element.on({
-		click: this.calendarOnclick
-	}, this.LECTURES_CONTAINER_CLASS )
+		click: $.proxy( this.calendarOnclick, { me: this } )
+	}, '.' + this.LECTURES_CONTAINER_CLASS )
 }
 
+
+/**
+ * [calendarOnclick description]
+ * @param  {[type]} event [description]
+ * @return {[type]}       [description]
+ */
 Schedule.Calendar.prototype.calendarOnclick = function( event ) {
 	var lectureData,
-			$lecturesContainer,
-			lecture
+			$target,
+			lecture,
+			me = this.me
 	;
-	event.stopPropagation();
-	$lecturesContainer = $( event.currentTarget );
-	lecture = new Schedule.Lecture( lectureData );
 
-	//$lecturesContainer.append( lecture.getElement() );
+	$target = $( event.target );
+	if( $target.hasClass( me.LECTURES_CONTAINER_CLASS ) ) {
+		event.stopPropagation();
+		lecture = new Schedule.Lecture( $target, lectureData );
+		this.lastLecture = lecture;
+		//$target.append( lecture.getElement() );
+	}
 }
 
 

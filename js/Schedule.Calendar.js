@@ -34,7 +34,7 @@ Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures'; // к�
 
 Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar'; // класс родительского элемента расписания (без точки!)
 
-Schedule.Calendar.prototype.CALENDAR_TEMPLATE = '' +
+Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 	'<div class="b-calendar">' +
 		'{{#each months}}' +
 			'<div class="b-month b-clear">' +
@@ -54,7 +54,7 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = '' +
 			'</div>' +
 		'{{/each}}' +
 	'</div>' +
-'';
+'' );
 
 
 /**
@@ -66,7 +66,6 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 	var dayObj, monthObj,
 			dayOfWeekTmp,
 			configTmp = this.config,
-			calendarTemplateCompiled = Handlebars.compile( this.CALENDAR_TEMPLATE ),
 			currentMonth = configTmp.fromDt.getMonth(),
 			calendarObj = {
 				months: []
@@ -96,7 +95,7 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 	}
 
 	// создаём расписание по шаблону
-	$applyTo.html( calendarTemplateCompiled( calendarObj ) );
+	$applyTo.html( this.CALENDAR_TEMPLATE( calendarObj ) );
 
 	this.$element = $applyTo.find( '.' + this.CALENDAR_CLASS );
 

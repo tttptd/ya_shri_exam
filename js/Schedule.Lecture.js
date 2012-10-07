@@ -3,8 +3,8 @@ Schedule.Lecture = function( $applyTo, config ) {
 
 	var defaultConfig = {
 				date: new Date(),
-				beginTime: 0,
-				endTime: 0,
+				beginTime: new Schedule.Time( 10 ),
+				endTime: new Schedule.Time( 10, 45 ),
 				subject: '',
 				thesis: '',
 				reporter: null,
@@ -26,12 +26,19 @@ Schedule.Lecture = function( $applyTo, config ) {
 
 
 Schedule.Lecture.prototype.render = function( $applyTo ) {
+	var editor = Schedule.LectureEditor.getInstance();
+
 	this.rnd = Math.random();
 	this.$element.find( '.b-lecture__name' ).html( '&nbsp;' );
 
 	$applyTo.append( this.$element );
 
-	Schedule.LectureEditor.getInstance().attachTo( this.$element ).show();
+	editor.attachTo( this.$element ).show().getForm().on({
+		change: $.proxy( function( event ) {
+			var fieldName = $( event.target ).prop( 'name' );
+			console.log( event, fieldName );
+		}, { me: this } )
+	});
 }
 
 

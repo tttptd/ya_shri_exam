@@ -112,6 +112,8 @@
 	padding: 10px;
 	border-radius: 5px;
 	width: 230px;
+	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
 }
 .b-form__field-wrapper {
 	text-align: right;

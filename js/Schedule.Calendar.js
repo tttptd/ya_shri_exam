@@ -125,6 +125,7 @@ Schedule.Calendar.prototype.calendarOnclick = function( event ) {
 
 	if( $target.hasClass( me.LECTURES_CONTAINER_CLASS ) ) {  // кликнули на день
 		lecture = new Schedule.Lecture( $target, lectureData );
+				console.log('change: ', data, event, obj, obj.serialize());
 		me.addLecture( lecture );
 	}
 	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || ( $lecture = $target.parents( '.' + lectureClassTmp ) ) ) { // кликнули на лекцию

@@ -1,10 +1,13 @@
 
 
 
-Schedule.Time = function( hour, min, sec ) {
-	this.set( 'hour', hour );
-	this.set( 'min', min );
-	this.set( 'sec', sec );
+Schedule.Time = function( data ) {
+	if( typeof data == 'string' ) {
+		this.parse( data );
+	}
+	this.hour !== undefined || this.set( 'hour', data.hour );
+	this.min !== undefined || this.set( 'min', data.min );
+	this.sec !== undefined || this.set( 'sec', data.sec );
 }
 
 
@@ -40,18 +43,20 @@ Schedule.Time.prototype.set = function( key, val ) {
  * @return {[type]}        [description]
  */
 Schedule.Time.prototype.parse = function( string ) {
-	var result = /([0-9]{1,2}):([0-9]{1,2}):*([0-9]{0,2})/ig.exec( string );
-	if( result[ 1 ] ) {
-		this.set( 'hour', result[ 1 ] );
-	}
-	if( result[ 2 ] ) {
-		this.set( 'min', result[ 2 ] );
-	}
-	if( result[ 3 ] ) {
-		this.set( 'sec', result[ 3 ] );
+	var result = /([0-9]{1,2}):*([0-9]{0,2}):*([0-9]{0,2})/ig.exec( string );
+	if( result ) {
+		if( result[ 1 ] ) {
+			this.set( 'hour', result[ 1 ] );
+		}
+		if( result[ 2 ] ) {
+			this.set( 'min', result[ 2 ] );
+		}
+		if( result[ 3 ] ) {
+			this.set( 'sec', result[ 3 ] );
+		}
 	}
 
-	return this;
+	return result;
 }
 
 

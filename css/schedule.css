@@ -102,6 +102,12 @@
 	color: #000;
 }
 
+.b-lecture__time_begin {
+}
+.b-lecture__time_end:before {
+	content: '—';
+}
+
 
 
 

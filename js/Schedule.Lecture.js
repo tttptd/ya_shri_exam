@@ -12,7 +12,6 @@ Schedule.Lecture = function( $applyTo, data ) {
 
 	this.data.id = Date.now().valueOf();
 
-	this.date = new Date( this.data.date ); // дата лекции
 	this.$element = $( '<div class="b-lecture b-lecture_invalid"><div class="b-lecture__subject">&nbsp;</div><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div></div>' ); // DOM-элемент
 	this.$element.data( 'id', this.data.id );
 
@@ -22,8 +21,8 @@ Schedule.Lecture = function( $applyTo, data ) {
 		end_time: this.$element.find('.b-lecture__time_end')
 	};
 
-	this.invalid = true; // флаг невалидности
-	this.dirty = true; // флаг наличия несохранённых изменений
+	this.setValid( false ); // флаг валидности
+	this.setDirty( true ); // флаг наличия несохранённых изменений
 
 	this.render( $applyTo );
 }
@@ -54,7 +53,7 @@ Schedule.Lecture.prototype.render = function( $applyTo ) {
 Schedule.Lecture.prototype.edit = function() {
 	Schedule.LectureEditor.getInstance()
 		.clear()
-		.set( this.data )
+		.load( this.data )
 		.attachTo( this.$element )
 		.show()
 		.getForm()
@@ -63,8 +62,11 @@ Schedule.Lecture.prototype.edit = function() {
 				var $target = $( event.target ),
 						fieldName = $target.prop( 'name' ),
 						fieldValue = $target.prop( 'value' );
+				this.me.setValid( Schedule.LectureEditor.getInstance().isValid() );
 				this.me.set( fieldName, fieldValue );
-				this.me.setValid( !Schedule.LectureEditor.getInstance().isValid() );
+
+				Schedule.LectureEditor.getInstance().set( fieldName, this.me.get( fieldName ) );
+
 			}, { me: this } )
 		});
 
@@ -110,12 +112,6 @@ Schedule.Lecture.prototype.isDirty = function() {
  */
 Schedule.Lecture.prototype.setDirty = function( dirty ) {
 	this.dirty = dirty;
-	if( dirty ) {
-		this.$element.addClass( 'b-lecture_dirty' );
-	}
-	else {
-		this.$element.removeClass( 'b-lecture_dirty' );
-	}
 
 	return this;
 }
@@ -153,19 +149,34 @@ Schedule.Lecture.prototype.setValid = function( valid ) {
 /**
  * Изменяет поля data лекции
  * @param {string} key ключ. Id менять нельзя
- * @param {string | number} val значение
+ * @param {string | number} value значение
  * @return this
  */
-Schedule.Lecture.prototype.set = function( key, val ) {
+Schedule.Lecture.prototype.set = function( key, value ) {
 	if( key != 'id' ) {
-		this.data[ key ] = val;
-		this.$elements[ key ] && this.$elements[ key ].html( val );
+		switch( key ) {
+			case 'begin_time':
+			case 'end_time':
+				value = new Schedule.Time( value );
+				break;
+			default:
+				break;
+		}
+		this.data[ key ] = value;
+		this.$elements[ key ] && this.$elements[ key ].html( value.toString() );
 	}
 
-	this.trigger( 'change', {
-		key: key,
-		val: val
-	});
+	this.setDirty( true );
+
+	if( this.isValid() ) { // событие вызывается, только если данные валидны
+		$( this ).trigger( 'change', [
+			{
+				key: key,
+				value: value
+			},
+			this
+		]);
+	}
 
 	return this;
 }
@@ -179,6 +190,16 @@ Schedule.Lecture.prototype.set = function( key, val ) {
 Schedule.Lecture.prototype.get = function( key ) {
 
 	return this.data[ key ];
+}
+
+
+/**
+ * Сериализация объекта
+ * @return {string} JSON
+ */
+Schedule.Lecture.prototype.serialize = function() {
+
+	return JSON.stringify( this.data );
 }
 
 

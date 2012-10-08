@@ -14,17 +14,17 @@ Schedule.LectureEditor = (function () {
 					'<form class="b-form b-form-lecture-edit">' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-subject" class="b-form__field-label">Тема:</label>' +
-							'<input type="text" name="subject" id="lecture-edit-subject" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="" />' +
+							'<input type="text" name="subject" id="lecture-edit-subject" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="" maxlength="200" />' +
 						'</div>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-begin-time" class="b-form__field-label">Время:</label>' +
-							'<input type="time" name="begin_time" id="lecture-edit-begin-time" class="b-form__field-input" value="" required="required" placeholder="12:00" size="6" maxlength="5" />' +
+							'<input type="time" name="begin_time" id="lecture-edit-begin-time" class="b-form__field-input" value="" required="required" placeholder="12:00" size="6" maxlength="5" pattern="[0-9]{1,2}:[0-9]{1,2}" />' +
 							'—' +
-							'<input type="time" name="end_time" id="lecture-edit-end-time" class="b-form__field-input" value="" placeholder="12:45" size="6" maxlength="5" />' +
+							'<input type="time" name="end_time" id="lecture-edit-end-time" class="b-form__field-input" value="" placeholder="12:45" size="6" maxlength="5" pattern="[0-9]{1,2}:[0-9]{1,2}" />' +
 						'</div>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-reporter" class="b-form__field-label">Докладчик:</label>' +
-							'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" />' +
+							'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" maxlength="100" pattern="[a-zа-яёA-ZА-ЯЁ\s-]+" />' +
 						'</div>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-presentation" class="b-form__field-label">Презентация:</label>' +
@@ -88,11 +88,26 @@ Schedule.LectureEditor = (function () {
 
 
 			/**
+			 * Выставляет значение value в поле name
+			 * @param {string} name  [description]
+			 * @param {string} value [description]
+			 * @return this
+			 */
+			set: function( name, value ) {
+				var $field = $fields.filter( '[name=' + name + ']' );
+
+				$field && $field.prop( 'value', value );
+
+				return this;
+			},
+
+
+			/**
 			 * Загружает данные в форму
 			 * @param {object} data данные лекции, ключи соответствуют именам полей формы { subject: '', begin_time: '', end_time: '', ... }
 			 * @return this
 			 */
-			set: function( data ) {
+			load: function( data ) {
 				var $dom;
 
 				$fields.map( $.proxy( function( index, dom ) {

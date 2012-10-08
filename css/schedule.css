@@ -92,12 +92,14 @@
 	border-color: rgba(91, 155, 255, 1);
 }
 .b-lecture_dirty {
-	background: rgba(255, 202, 157, .5);
-	border-color: rgba(255, 202, 157, 1);
+	background: rgba(202, 202, 202, .2);
+	border-color: rgba(202, 202, 202, .5);
+	color: #888;
 }
 .b-lecture_dirty:hover {
-	background: rgba(255, 202, 157, .8);
-	border-color: rgba(255, 202, 157, 1);
+	background: rgba(202, 202, 202, .5);
+	border-color: rgba(202, 202, 202, .8);
+	color: #000;
 }
 
 

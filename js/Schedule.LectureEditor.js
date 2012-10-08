@@ -11,32 +11,30 @@ Schedule.LectureEditor = (function () {
 
 		var	$editForm, $fields,
 				FORM_TEMPLATE = Handlebars.compile( '' +
-					'<div class="b-form b-form-lecture-edit">' +
-						'<form>' +
-							'<div class="b-form__field-wrapper">' +
-								'<label for="lecture-edit-subject" class="b-form__field-label">Тема:</label>' +
-								'<input type="text" name="subject" id="lecture-edit-subject" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="" />' +
-							'</div>' +
-							'<div class="b-form__field-wrapper">' +
-								'<label for="lecture-edit-begin-time" class="b-form__field-label">Время:</label>' +
-								'<input type="time" name="begin_time" id="lecture-edit-begin-time" class="b-form__field-input" value="" required="required" placeholder="12:00" size="6" maxlength="5" />' +
-								'—' +
-								'<input type="time" name="end_time" id="lecture-edit-end-time" class="b-form__field-input" value="" placeholder="12:45" size="6" maxlength="5" />' +
-							'</div>' +
-							'<div class="b-form__field-wrapper">' +
-								'<label for="lecture-edit-reporter" class="b-form__field-label">Докладчик:</label>' +
-								'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" />' +
-							'</div>' +
-							'<div class="b-form__field-wrapper">' +
-								'<label for="lecture-edit-presentation" class="b-form__field-label">Презентация:</label>' +
-								'<input type="url" name="presentation" id="lecture-edit-presentation" class="b-form__field-input b-form__field-input_maxwidth" value="" placeholder="http://example.com/lecture.pdf" />' +
-							'</div>' +
-							'<div class="b-form__field-wrapper">' +
-								'<label for="lecture-edit-thesis" class="b-form__field-label b-form__field-label_newline">Тезисы:</label>' +
-								'<textarea name="thesis" id="lecture-edit-thesis" class="b-form__field-input  b-form__field-input_maxwidth b-form__field_textarea"></textarea>' +
-							'</div>' +
-						'</form>' +
-					'</div>' +
+					'<form class="b-form b-form-lecture-edit">' +
+						'<div class="b-form__field-wrapper">' +
+							'<label for="lecture-edit-subject" class="b-form__field-label">Тема:</label>' +
+							'<input type="text" name="subject" id="lecture-edit-subject" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="" />' +
+						'</div>' +
+						'<div class="b-form__field-wrapper">' +
+							'<label for="lecture-edit-begin-time" class="b-form__field-label">Время:</label>' +
+							'<input type="time" name="begin_time" id="lecture-edit-begin-time" class="b-form__field-input" value="" required="required" placeholder="12:00" size="6" maxlength="5" />' +
+							'—' +
+							'<input type="time" name="end_time" id="lecture-edit-end-time" class="b-form__field-input" value="" placeholder="12:45" size="6" maxlength="5" />' +
+						'</div>' +
+						'<div class="b-form__field-wrapper">' +
+							'<label for="lecture-edit-reporter" class="b-form__field-label">Докладчик:</label>' +
+							'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" />' +
+						'</div>' +
+						'<div class="b-form__field-wrapper">' +
+							'<label for="lecture-edit-presentation" class="b-form__field-label">Презентация:</label>' +
+							'<input type="url" name="presentation" id="lecture-edit-presentation" class="b-form__field-input b-form__field-input_maxwidth" value="" placeholder="http://example.com/lecture.pdf" />' +
+						'</div>' +
+						'<div class="b-form__field-wrapper">' +
+							'<label for="lecture-edit-thesis" class="b-form__field-label b-form__field-label_newline">Тезисы:</label>' +
+							'<textarea name="thesis" id="lecture-edit-thesis" class="b-form__field-input  b-form__field-input_maxwidth b-form__field_textarea"></textarea>' +
+						'</div>' +
+					'</form>' +
 				'' )
 		;
 
@@ -83,7 +81,7 @@ Schedule.LectureEditor = (function () {
 			 * @return this
 			 */
 			clear: function() {
-				$fields.prop('value', '');
+				$editForm[0].reset();
 
 				return this;
 			},
@@ -103,6 +101,16 @@ Schedule.LectureEditor = (function () {
 				}, data ) );
 
 				return this;
+			},
+
+
+			/**
+			 * [isValid description]
+			 * @return {Boolean} [description]
+			 */
+			isValid: function() {
+
+				return $editForm[0].checkValidity();
 			},
 
 

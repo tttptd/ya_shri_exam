@@ -2,8 +2,8 @@
 Schedule.Lecture = function( $applyTo, data ) {
 	this.data = $.extend( {
 			date: new Date(),
-			begin_time: new Schedule.Time( 10 ),
-			end_time: new Schedule.Time( 10, 45 ),
+			begin_time: '', //new Schedule.Time( 10 ),
+			end_time: '', //new Schedule.Time( 10, 45 ),
 			subject: '',
 			thesis: '',
 			reporter: null,
@@ -63,6 +63,7 @@ Schedule.Lecture.prototype.edit = function() {
 						fieldName = $target.prop( 'name' ),
 						fieldValue = $target.prop( 'value' );
 				this.me.set( fieldName, fieldValue );
+				this.me.setDirty( !Schedule.LectureEditor.getInstance().isValid() );
 			}, { me: this } )
 		});
 

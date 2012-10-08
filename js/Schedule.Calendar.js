@@ -11,6 +11,7 @@ Schedule.Calendar = function( $applyTo, config ) {
 	this.config = $.extend( defaultConfig, config );
 
 	this.lastLecture = null; // последняя добавленная лекция
+	this.lectures = {}; // лекции: {Schedule.Lecture.id: Schedule.Lecture, ...}
 
 	this.render( $applyTo );
 }
@@ -109,25 +110,65 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 /**
  * [calendarOnclick description]
  * @param  {[type]} event [description]
- * @return {[type]}       [description]
  */
 Schedule.Calendar.prototype.calendarOnclick = function( event ) {
 	var lectureData,
-			$target,
+			$target = $( event.target ),
 			lecture,
-			me = this.me
+			$lecture,
+			me = this.me,
+			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS
 	;
 
-	$target = $( event.target );
-	if( $target.hasClass( me.LECTURES_CONTAINER_CLASS ) ) {
-		event.stopPropagation();
+	event.stopPropagation();
+
+	if( $target.hasClass( me.LECTURES_CONTAINER_CLASS ) ) {  // кликнули на день
 		lecture = new Schedule.Lecture( $target, lectureData );
-		this.lastLecture = lecture;
-		//$target.append( lecture.getElement() );
+		me.addLecture( lecture );
+	}
+	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || ( $lecture = $target.parents( '.' + lectureClassTmp ) ) ) { // кликнули на лекцию
+		lecture = me.getLecture( $lecture.data( 'id' ) );
+	}
+
+	if( lecture ) {
+		me.lastLecture && me.lastLecture.editorUnbind();
+		me.lastLecture = lecture;
+		lecture.edit();
 	}
 }
 
 
+/**
+ * Добавляет лекцию в хранилище
+ * @param {Schedule.Lecture} lecture
+ * @return {number} внутренний id лекции (позицию в массиве)
+ */
+Schedule.Calendar.prototype.addLecture = function( lecture ) {
+	var lectureId = lecture.get( 'id' );
+
+	if( !this.lectures[ lectureId ] ) {
+		this.lectures[ lectureId ] = lecture;
+	}
+	else {
+		console.error( 'Lection with this id already exists' );
+		// @TODO чёнить сделать, если лекция с таким id уже существует. Хотя это и маловероятно
+	}
+
+	//console.log(this.lectures);
+
+	return lectureId;
+}
+
+
+/**
+ * Возвращает экземпляр Schedule.Lecture из хранилища, по его id
+ * @param  {number} lectureId id лекции
+ * @return {Schedule.Lecture}
+ */
+Schedule.Calendar.prototype.getLecture = function( lectureId ) {
+
+	return this.lectures[ lectureId ] || -1;
+}
 
 
 

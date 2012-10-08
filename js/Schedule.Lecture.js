@@ -13,7 +13,7 @@ Schedule.Lecture = function( $applyTo, data ) {
 	this.data.id = Date.now().valueOf();
 
 	this.date = new Date( this.data.date ); // дата лекции
-	this.$element = $( '<div class="b-lecture b-lecture_dirty"><div class="b-lecture__subject">&nbsp;</div><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div></div>' ); // DOM-элемент
+	this.$element = $( '<div class="b-lecture b-lecture_invalid"><div class="b-lecture__subject">&nbsp;</div><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div></div>' ); // DOM-элемент
 	this.$element.data( 'id', this.data.id );
 
 	this.$elements = {
@@ -22,7 +22,8 @@ Schedule.Lecture = function( $applyTo, data ) {
 		end_time: this.$element.find('.b-lecture__time_end')
 	};
 
-	this._dirty = true; // флаг незаполненности формы
+	this.invalid = true; // флаг невалидности
+	this.dirty = true; // флаг наличия несохранённых изменений
 
 	this.render( $applyTo );
 }
@@ -63,7 +64,7 @@ Schedule.Lecture.prototype.edit = function() {
 						fieldName = $target.prop( 'name' ),
 						fieldValue = $target.prop( 'value' );
 				this.me.set( fieldName, fieldValue );
-				this.me.setDirty( !Schedule.LectureEditor.getInstance().isValid() );
+				this.me.setValid( !Schedule.LectureEditor.getInstance().isValid() );
 			}, { me: this } )
 		});
 
@@ -87,6 +88,7 @@ Schedule.Lecture.prototype.editorUnbind = function() {
  * @return {[type]} [description]
  */
 Schedule.Lecture.prototype.getElement = function() {
+
 	return this.$element;
 }
 
@@ -96,7 +98,8 @@ Schedule.Lecture.prototype.getElement = function() {
  * @return {Boolean} [description]
  */
 Schedule.Lecture.prototype.isDirty = function() {
-	return this._dirty;
+
+	return this.dirty;
 }
 
 
@@ -106,12 +109,41 @@ Schedule.Lecture.prototype.isDirty = function() {
  * @return this
  */
 Schedule.Lecture.prototype.setDirty = function( dirty ) {
-	this._dirty = dirty;
+	this.dirty = dirty;
 	if( dirty ) {
 		this.$element.addClass( 'b-lecture_dirty' );
 	}
 	else {
 		this.$element.removeClass( 'b-lecture_dirty' );
+	}
+
+	return this;
+}
+
+
+/**
+ * [isValid description]
+ * @return {Boolean} [description]
+ */
+Schedule.Lecture.prototype.isValid = function() {
+
+	return this.valid;
+}
+
+
+/**
+ * [setValid description]
+ * @param {boolean} valid [description]
+ * @return this
+ */
+Schedule.Lecture.prototype.setValid = function( valid ) {
+	this.valid = valid;
+
+	if( valid ) {
+		this.$element.removeClass( 'b-lecture_invalid' );
+	}
+	else {
+		this.$element.addClass( 'b-lecture_invalid' );
 	}
 
 	return this;
@@ -129,6 +161,11 @@ Schedule.Lecture.prototype.set = function( key, val ) {
 		this.data[ key ] = val;
 		this.$elements[ key ] && this.$elements[ key ].html( val );
 	}
+
+	this.trigger( 'change', {
+		key: key,
+		val: val
+	});
 
 	return this;
 }

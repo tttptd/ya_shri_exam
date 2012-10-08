@@ -16,11 +16,13 @@ Schedule.Calendar = function( $applyTo, config ) {
 	this.render( $applyTo );
 }
 
+
 Schedule.Calendar.prototype.MONTH_NAMES = {
 	ru: {
 		full: [ 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь' ]
 	}
 }
+
 
 Schedule.Calendar.prototype.DAYSOFWEEK = {
 	en: {
@@ -31,9 +33,12 @@ Schedule.Calendar.prototype.DAYSOFWEEK = {
 	}
 }
 
+
 Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures'; // класс элемента-контейнера лекций (без точки!)
 
+
 Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar'; // класс родительского элемента расписания (без точки!)
+
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 	'<div class="b-calendar">' +
@@ -44,11 +49,7 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 					'{{#each days}}' +
 						'<div class="b-day b-day_{{dayOfWeekClass}} b-noselect">' +
 							'<div class="b-day__name"><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
-							'<div class="b-day__lectures" data-date="{{dateObj}}">' +
-								//'<div class="b-lecture"><div class="b-lecture__time">18:00—18:45</div><div class="b-lecture__name">Общий цикл разработки</div></div>' +
-								//'<div class="b-lecture"><div class="b-lecture__time">19:00—19:45</div><div class="b-lecture__name">XSLT (факультативная)</div></div>' +
-								//'<div class="b-lecture"><div class="b-lecture__time">20:00—20:45</div><div class="b-lecture__name">JS. Базовые знания</div></div>' +
-							'</div>' +
+							'<div class="b-day__lectures" data-date="{{dateObj}}"></div>' +
 						'</div>' +
 					'{{/each}}' +
 				'</div>' +
@@ -169,6 +170,7 @@ Schedule.Calendar.prototype.getLecture = function( lectureId ) {
 
 	return this.lectures[ lectureId ] || -1;
 }
+
 
 
 

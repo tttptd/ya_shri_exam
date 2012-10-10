@@ -15,22 +15,22 @@ Schedule.Time = function( data ) {
 /**
  * [set description]
  * @param {string} key = hour | min | sec | longsec (0 .. 86400)
- * @param {number} val 0..59
+ * @param {number} value 0..59
  */
-Schedule.Time.prototype.set = function( key, val ) {
+Schedule.Time.prototype.set = function( key, value ) {
 
-	val = +val || 0;
+	value = +value || 0;
 	key = '' + key;
 
-	if( ( key == 'hour' && val > 23 ) || ( key == 'min' && val > 59 ) || ( key == 'sec' && val > 59 ) || ( key == 'longsec' && val > 86400 ) ) {
+	if( ( key == 'hour' && value > 23 ) || ( key == 'min' && value > 59 ) || ( key == 'sec' && value > 59 ) || ( key == 'longsec' && value > 86400 ) ) {
 		this[ key ] = 0;
 	}
 	else if( $.inArray( key, [ 'hour', 'min', 'sec' ] ) != -1 ) {
-		this[ key ] = val;
+		this[ key ] = value;
 	}
 	else if( key == 'longsec' ) {
-		this.set( 'hour', Math.floor( val / 3600 ) );
-		this.set( 'min', Math.round( val % 3600 / 60 ) );
+		this.set( 'hour', Math.floor( value / 3600 ) );
+		this.set( 'min', Math.round( value % 3600 / 60 ) );
 	}
 
 	return this;

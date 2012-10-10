@@ -42,20 +42,27 @@ Schedule.LectureEditor = (function () {
 		$editForm = $( '.b-form' );
 		$fields = $editForm.find('*[name]');
 
+		$editForm.keydown( $.proxy( function( event ) {
+			// Нажали Escape
+			if( event.keyCode == 27 ) {
+				instance.hide();
+			}
+		}, this ) );
+
 		return {
 
 			/**
-			 * [getForm description]
+			 * Возвращает форму
 			 * @return {$element}
 			 */
-			getForm: function() {
+			form: function() {
 
 				return $editForm;
 			},
 
 
 			/**
-			 * Показывает форму
+			 * Показывает окно формы
 			 * @return this
 			 */
 			show: function() {
@@ -66,11 +73,13 @@ Schedule.LectureEditor = (function () {
 
 
 			/**
-			 * Скрывает форму
+			 * Скрывает окно формы
+			 * Вызывает событие hide
 			 * @return this
 			 */
 			hide: function() {
 				$editForm.hide();
+				//this.trigger( 'hide' );
 
 				return this;
 			},
@@ -81,7 +90,7 @@ Schedule.LectureEditor = (function () {
 			 * @return this
 			 */
 			clear: function() {
-				$editForm[0].reset();
+				this.form()[0].reset();
 
 				return this;
 			},
@@ -93,7 +102,7 @@ Schedule.LectureEditor = (function () {
 			 * @param {string} value [description]
 			 * @return this
 			 */
-			set: function( name, value ) {
+			field: function( name, value ) {
 				var $field = $fields.filter( '[name=' + name + ']' );
 
 				$field && $field.prop( 'value', value );
@@ -120,10 +129,10 @@ Schedule.LectureEditor = (function () {
 
 
 			/**
-			 * [isValid description]
+			 * [valid description]
 			 * @return {Boolean} [description]
 			 */
-			isValid: function() {
+			valid: function() {
 
 				return $editForm[0].checkValidity();
 			},
@@ -137,7 +146,7 @@ Schedule.LectureEditor = (function () {
 			attachTo: function( $element ) {
 				var elementOffsetTmp = $element.offset();
 
-				$editForm.offset({
+				$editForm.css({
 					left: elementOffsetTmp.left - 20,
 					top: elementOffsetTmp.top - $editForm.outerHeight() - 4
 				});

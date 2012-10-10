@@ -18,6 +18,10 @@
 
 
 
+
+
+
+
 .b-day {
 	width: 121px;
 	height: 150px;
@@ -63,6 +67,7 @@
 	text-align: right;
 	padding: 10px;
 	background: rgba(255, 244, 147, .7);
+	position: relative;
 }
 .b-day__dayofweek {
 	font-size: 11px;
@@ -70,10 +75,20 @@
 .b-day__dayofmonth {
 	font-size: 14px;
 }
+.b-day__add-lecture {
+	position: absolute;
+	left: 4px;
+	opacity: .3;
+	cursor: pointer;
+}
+.b-day__add-lecture:hover {
+	opacity: 1;
+}
 
 .b-day__lectures {
-	min-height: 116px;
+	height: 116px;
 	cursor: pointer;
+	overflow: auto;
 }
 
 
@@ -87,7 +102,8 @@
 	padding: 2px;
 	border: 1px solid transparent;
 }
-.b-lecture:hover {
+.b-lecture:hover,
+.b-lecture.b-lecture_active {
 	background: rgba(91, 155, 255, .8);
 	border-color: rgba(91, 155, 255, 1);
 }
@@ -96,7 +112,8 @@
 	border-color: rgba(202, 202, 202, .5);
 	color: #888;
 }
-.b-lecture_invalid:hover {
+.b-lecture_invalid:hover,
+.b-lecture_invalid.b-lecture_active {
 	background: rgba(202, 202, 202, .5);
 	border-color: rgba(202, 202, 202, .8);
 	color: #000;

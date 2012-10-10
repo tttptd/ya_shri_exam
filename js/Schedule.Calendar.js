@@ -4,14 +4,19 @@
 
 Schedule.Calendar = function( $applyTo, config ) {
 	var defaultConfig = {
-				fromDt: new Date( 2010, 8 ), // дата начала календаря
-				tillDt: new Date( 2020, 11, 31 ) // дата конца каландаря
+				fromDt: new Date( 2010, 8 ), // Дата начала календаря
+				tillDt: new Date( 2020, 11, 31 ) // Дата конца каландаря
 			};
 
 	this.config = $.extend( defaultConfig, config );
 
-	this.lastLecture = null; // последняя добавленная лекция
-	this.lectures = {}; // лекции: {Schedule.Lecture.id: Schedule.Lecture, ...}
+	this.lastLecture = null; // Последняя добавленная лекция
+	this.lectures = {}; // Лекции: {day: { Schedule.Lecture.id: Schedule.Lecture, ...}, ... }
+
+	this.storage = window.localStorage || {}; // @TODO класс, эмулирующий localStorage в обычном объекте
+
+	this.load();
+
 
 	this.render( $applyTo );
 }
@@ -34,10 +39,20 @@ Schedule.Calendar.prototype.DAYSOFWEEK = {
 }
 
 
-Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures'; // класс элемента-контейнера лекций (без точки!)
+// Класс кнопки добавления лекции (без точки!)
+Schedule.Calendar.prototype.BTN_ADD_LECTURE_CLASS = 'b-day__add-lecture';
 
 
-Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar'; // класс родительского элемента расписания (без точки!)
+// Класс элемента дня (без точки!)
+Schedule.Calendar.prototype.DAY_CLASS = 'b-day';
+
+
+// Класс элемента-контейнера лекций (без точки!)
+Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures';
+
+
+// Класс родительского элемента расписания (без точки!)
+Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar';
 
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
@@ -48,8 +63,8 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 				'<div class="b-month__days">' +
 					'{{#each days}}' +
 						'<div class="b-day b-day_{{dayOfWeekClass}} b-noselect">' +
-							'<div class="b-day__name"><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
-							'<div class="b-day__lectures" data-date="{{dateObj}}"></div>' +
+							'<div class="b-day__name"><i class="icon-plus-sign b-day__add-lecture" title="Добавить лекцию"></i><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
+							'<div class="b-day__lectures" data-day="{{day}}"></div>' +
 						'</div>' +
 					'{{/each}}' +
 				'</div>' +
@@ -60,21 +75,22 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 
 
 /**
- * [render description]
+ * Рендерит календарную сетку
  * @param  {[type]} $applyTo [description]
- * @return {[type]}          [description]
+ * @return this
  */
 Schedule.Calendar.prototype.render = function( $applyTo ) {
 	var dayObj, monthObj,
-			dayOfWeekTmp,
+			dayOfWeekTmp, lecturesTmp,
 			configTmp = this.config,
 			currentMonth = configTmp.fromDt.getMonth(),
 			calendarObj = {
 				months: []
 			};
 
-	// формируем объект из месяцев и их дней, для скармливания шаблону
-	while( configTmp.fromDt <= configTmp.tillDt ) { // обход месяцев
+	// Формируем объект из месяцев и их дней, для скармливания шаблону
+	// Обход месяцев
+	while( configTmp.fromDt <= configTmp.tillDt ) {
 		currentMonth = configTmp.fromDt.getMonth();
 		monthObj = {
 			monthName: this.getMonthName( currentMonth ),
@@ -82,13 +98,14 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 			year: configTmp.fromDt.getFullYear(),
 			days: []
 		};
-		while( configTmp.fromDt.getMonth() == currentMonth ) { // обход дней месяца
+		// Обход дней месяца
+		while( configTmp.fromDt.getMonth() == currentMonth ) {
 			dayOfWeekTmp = configTmp.fromDt.getDay();
 			dayObj = {
 				dayOfWeekClass: this.getDayOfWeekName( dayOfWeekTmp, null, 'en' ),
 				dayOfWeekName: this.getDayOfWeekName( dayOfWeekTmp ),
 				dayOfMonthName: configTmp.fromDt.getDate(),
-				dateObj: configTmp.fromDt.toString()
+				day: configTmp.fromDt.valueOf()
 			};
 			monthObj.days.push( dayObj )
 			configTmp.fromDt.add( 1 ).days();
@@ -96,85 +113,181 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 		calendarObj.months.push( monthObj );
 	}
 
-	// создаём расписание по шаблону
+	// Вставляем сформированный html в dom
 	$applyTo.html( this.CALENDAR_TEMPLATE( calendarObj ) );
 
 	this.$element = $applyTo.find( '.' + this.CALENDAR_CLASS );
 
-	// слушаем клики по дням
+	this.$days = this.$element.find( '.' + this.LECTURES_CONTAINER_CLASS );
+	this.$days.each( $.proxy( function( key, day ) {
+		var lecturesTmp,
+				$day = $( day ),
+				dayTmp = $day.data( 'day' );
+
+		// Если в хранилище есть лекции на этот день
+		if( lecturesTmp = this.lectures[ dayTmp ] ) {
+			$.each( lecturesTmp, $.proxy( function( lectureId, lecture ) {
+				lecture.render( $day );
+			}, this) );
+		}
+	}, this ) );
+
+	// Слушаем события
 	this.$element.on({
-		click: $.proxy( this.calendarOnclick, { me: this } )
-	}, '.' + this.LECTURES_CONTAINER_CLASS )
+		click: $.proxy( this.calendarOnclick, this )
+	} );
+
+	return this;
 }
 
 
 /**
- * [calendarOnclick description]
+ * Обработчик клика по календарю
  * @param  {[type]} event [description]
  */
 Schedule.Calendar.prototype.calendarOnclick = function( event ) {
-	var lectureData,
-			$target = $( event.target ),
+	var $target = $( event.target ),
 			lecture,
 			$lecture,
-			me = this.me,
-			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS
-	;
+			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS;
 
 	event.stopPropagation();
 
-	if( $target.hasClass( me.LECTURES_CONTAINER_CLASS ) ) {  // кликнули на день
-		lecture = new Schedule.Lecture( $target, lectureData );
-		$( lecture ).on({
-			change: $.proxy( function( event, data, obj ) {
-				console.log('change: ', data, event, obj, obj.serialize());
-			}, { me: this } )
-		});
-		me.addLecture( lecture );
+	// Кликнули на день
+	if( $target.hasClass( this.LECTURES_CONTAINER_CLASS ) ) {
+		lecture = this.createLecture( $target );
 	}
-	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || ( $lecture = $target.parents( '.' + lectureClassTmp ) ) ) { // кликнули на лекцию
-		lecture = me.getLecture( $lecture.data( 'id' ) );
+	// Кликнули на кнопочку "Добавить"
+	else if( $target.hasClass( this.BTN_ADD_LECTURE_CLASS ) ) {
+		lecture = this.createLecture( $target.parents( '.' + this.DAY_CLASS ).find( '.' + this.LECTURES_CONTAINER_CLASS ) );
+	}
+	// Кликнули на лекцию
+	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || $target.parents( '.' + lectureClassTmp ).length ) {
+		if( !$lecture ) {
+			$lecture = $target.parents( '.' + lectureClassTmp );
+		}
+		lecture = this.getLecture( $lecture.data( 'id' ) );
 	}
 
 	if( lecture ) {
-		me.lastLecture && me.lastLecture.editorUnbind();
-		me.lastLecture = lecture;
+		this.lastLecture && this.lastLecture.editorUnbind();
+		this.lastLecture = lecture;
 		lecture.edit();
 	}
 }
 
 
 /**
- * Добавляет лекцию в хранилище
+ * Сохранение данных из объекта-хранилища в localStorage
+ * @return this
+ */
+Schedule.Calendar.prototype.save = function() {
+	this.storage.setItem( 'schedule.lectures', JSON.stringify( this.lectures ) );
+
+	return this;
+}
+
+
+/**
+ * Загружаем из localStorage в объект-хранилище
+ * @return this
+ */
+Schedule.Calendar.prototype.load = function() {
+	var data = this.storage.getItem( 'schedule.lectures' );
+
+	if( data ) {
+		data = JSON.parse( data );
+		$.each( data, $.proxy( function( key, day ) {
+			$.each( day, $.proxy( function( key, lectureData ) {
+				this.createLecture( lectureData );
+			}, this ) );
+		}, this ) );
+	}
+
+	console.log(this);
+
+	return this;
+}
+
+
+/**
+ * Создаёт экземпляр лекции, вешает слушателя на изменения и добавляет лекцию в объект-хранилище
+ * @param  {$ | object} data dom-элемент-родитель, либо объект с данными лекции
+ * @return {Schedule.Lecture}
+ */
+Schedule.Calendar.prototype.createLecture = function( data ) {
+	var lectureData, lecture, $day;
+
+	// В data dom-контейнер для добавления
+	if( data instanceof $ && data.length ) {
+		$day = data;
+		lectureData = {
+			day: $day.data( 'day' )
+		};
+	}
+	// В data хэш с данными
+	else if( !(data instanceof $) ) {
+		lectureData = data;
+	}
+
+	if( lectureData ) {
+		lecture = new Schedule.Lecture( lectureData, $day );
+		$( lecture ).on({
+			change: $.proxy( function( event, data, obj ) {
+				this.save();
+			}, this )
+		});
+		this.addLecture( lecture );
+	}
+
+	return lecture;
+}
+
+
+/**
+ * Добавляет лекцию в объект-хранилище
  * @param {Schedule.Lecture} lecture
  * @return {number} внутренний id лекции (позицию в массиве)
  */
 Schedule.Calendar.prototype.addLecture = function( lecture ) {
-	var lectureId = lecture.get( 'id' );
+	var lectureId = lecture.data( 'id' )
+			lectureDay = lecture.data( 'day' );
 
-	if( !this.lectures[ lectureId ] ) {
-		this.lectures[ lectureId ] = lecture;
+	if( !this.lectures[ lectureDay ] ) {
+		this.lectures[ lectureDay ] = {};
+	}
+
+	if( !this.lectures[ lectureDay ][ lectureId ] ) {
+		this.lectures[ lectureDay ][ lectureId ] = lecture;
 	}
 	else {
-		console.error( 'Lection with this id already exists' );
-		// @TODO чёнить сделать, если лекция с таким id уже существует. Хотя это и маловероятно
+		console.error( 'Lection with this id [' + lectureId + '] already exists in day [' + lectureDay + ']' );
 	}
-
-	//console.log(this.lectures);
 
 	return lectureId;
 }
 
 
 /**
- * Возвращает экземпляр Schedule.Lecture из хранилища, по его id
+ * Возвращает экземпляр Schedule.Lecture из объекта-хранилища, по его id
  * @param  {number} lectureId id лекции
  * @return {Schedule.Lecture}
  */
 Schedule.Calendar.prototype.getLecture = function( lectureId ) {
+	var result = -1;
 
-	return this.lectures[ lectureId ] || -1;
+	$.each( this.lectures, $.proxy( function( key, value ) {
+		if( result = value[ lectureId ] ) {
+			return false;
+		}
+	}, this ) );
+
+	return result;
 }
+
+
+
+
 
 
 

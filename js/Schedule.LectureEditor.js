@@ -12,6 +12,7 @@ Schedule.LectureEditor = (function () {
 		var	$editForm, $fields,
 				FORM_TEMPLATE = Handlebars.compile( '' +
 					'<form class="b-form b-form-lecture-edit">' +
+						'<i class="icon-remove-circle b-form__close" title="Закрыть"></i>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-subject" class="b-form__field-label">Тема:</label>' +
 							'<input type="text" name="subject" id="lecture-edit-subject" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="" maxlength="200" />' +
@@ -42,12 +43,19 @@ Schedule.LectureEditor = (function () {
 		$editForm = $( '.b-form' );
 		$fields = $editForm.find('*[name]');
 
-		$editForm.keydown( $.proxy( function( event ) {
+		$editForm.keydown( function( event ) {
 			// Нажали Escape
 			if( event.keyCode == 27 ) {
 				instance.hide();
 			}
-		}, this ) );
+		});
+
+		$editForm
+			.find('.b-form__close')
+			.click( function( event ) {
+				instance.hide();
+			});
+
 
 		return {
 
@@ -66,7 +74,11 @@ Schedule.LectureEditor = (function () {
 			 * @return this
 			 */
 			show: function() {
-				$editForm.show().find('.b-form__field-input').first().focus();;
+				$editForm
+					.fadeIn( 50 )
+					.find('.b-form__field-input')
+					.first()
+					.focus();
 
 				return this;
 			},
@@ -78,7 +90,7 @@ Schedule.LectureEditor = (function () {
 			 * @return this
 			 */
 			hide: function() {
-				$editForm.hide();
+				$editForm.fadeOut( 50 );
 				//this.trigger( 'hide' );
 
 				return this;

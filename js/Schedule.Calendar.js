@@ -57,6 +57,10 @@ Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar';
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 	'<div class="b-calendar">' +
+		'<ul class="b-clear b-switcher b-noselect">' +
+			'<li class="b-switcher__mode b-switcher__mode_active" data-mode="calendar"><a href="#" class="b-local b-fresh">На календаре</a></li>' +
+			'<li class="b-switcher__mode" data-mode="list"><a href="#" class="b-local b-fresh">списком</a></li>' +
+		'</ul>' +
 		'{{#each months}}' +
 			'<div class="b-month b-clear">' +
 				'<div class="b-month__name">{{monthName}} {{year}}</div>' +
@@ -146,9 +150,8 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
  * @param  {[type]} event [description]
  */
 Schedule.Calendar.prototype.calendarOnclick = function( event ) {
-	var $target = $( event.target ),
-			lecture,
-			$lecture,
+	var lecture, $lecture, showEditor = true,
+			$target = $( event.target ),
 			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS;
 
 	event.stopPropagation();
@@ -160,6 +163,7 @@ Schedule.Calendar.prototype.calendarOnclick = function( event ) {
 	// Кликнули на кнопочку "Добавить"
 	else if( $target.hasClass( this.BTN_ADD_LECTURE_CLASS ) ) {
 		lecture = this.createLecture( $target.parents( '.' + this.DAY_CLASS ).find( '.' + this.LECTURES_CONTAINER_CLASS ) );
+		showEditor = false;
 	}
 	// Кликнули на лекцию
 	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || $target.parents( '.' + lectureClassTmp ).length ) {
@@ -172,7 +176,9 @@ Schedule.Calendar.prototype.calendarOnclick = function( event ) {
 	if( lecture ) {
 		this.lastLecture && this.lastLecture.editorUnbind();
 		this.lastLecture = lecture;
-		lecture.edit();
+		if( showEditor ) {
+			lecture.edit();
+		}
 	}
 }
 

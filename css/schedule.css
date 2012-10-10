@@ -1,3 +1,11 @@
+.b-header {
+	font-size: 26px;
+	padding: 60px 40px 20px;
+}
+
+
+
+
 .b-calendar {
 	padding: 30px 60px;
 	width: 860px;
@@ -5,15 +13,42 @@
 
 
 
+.b-switcher {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	margin-left: -10px;
+}
+.b-switcher__mode {
+	display: inline-block;
+	padding: 7px 10px 5px;
+	margin-right: 8px;
+}
+.b-switcher__mode_active {
+	background: #ddd;
+	border-radius: 8px;
+}
+.b-switcher__mode_active .b-local,
+.b-switcher__mode_active .b-local:hover {
+	border-bottom: 0;
+	color: #000 !important;
+	cursor: default;
+}
+
+
+
+
+
+
 .b-month {
-	padding-top: 40px;
+	padding-top: 60px;
 }
 .b-month:first-child {
 	padding-top: 0;
 }
 .b-month__name {
-	font-size: 20px;
 	padding: 0 0 10px;
+	font-size: 22px;
 }
 
 
@@ -23,13 +58,13 @@
 
 
 .b-day {
+	float: left;
+	overflow: hidden;
+	margin-top: 6px;
 	width: 121px;
 	height: 150px;
-	float: left;
-	border-left: 1px solid rgba(0, 0, 0, .04);
 	border-bottom: 1px solid rgba(0, 0, 0, .04);
-	margin-top: 6px;
-	overflow: hidden;
+	border-left: 1px solid rgba(0, 0, 0, .04);
 }
 .b-day:last-child,
 .b-day_sun {
@@ -63,11 +98,11 @@
 }
 
 .b-day__name {
-	line-height: 14px;
-	text-align: right;
+	position: relative;
 	padding: 10px;
 	background: rgba(255, 244, 147, .7);
-	position: relative;
+	text-align: right;
+	line-height: 14px;
 }
 .b-day__dayofweek {
 	font-size: 11px;
@@ -86,36 +121,38 @@
 }
 
 .b-day__lectures {
+	overflow: auto;
 	height: 116px;
 	cursor: pointer;
-	overflow: auto;
 }
+
+
 
 
 
 
 .b-lecture {
-	background: rgba(91, 155, 255, .5);
-	border-radius: 3px;
-	font-size: 10px;
-	color: #333;
 	padding: 2px;
-	border: 1px solid transparent;
+	border: 1px solid rgba(91, 155, 255, .2);
+	border-radius: 3px;
+	background: rgba(91, 155, 255, .5);
+	color: #333;
+	font-size: 10px;
 }
 .b-lecture:hover,
 .b-lecture.b-lecture_active {
-	background: rgba(91, 155, 255, .8);
 	border-color: rgba(91, 155, 255, 1);
+	background: rgba(91, 155, 255, .8);
 }
 .b-lecture_invalid {
-	background: rgba(202, 202, 202, .2);
 	border-color: rgba(202, 202, 202, .5);
+	background: rgba(202, 202, 202, .2);
 	color: #888;
 }
 .b-lecture_invalid:hover,
 .b-lecture_invalid.b-lecture_active {
-	background: rgba(202, 202, 202, .5);
 	border-color: rgba(202, 202, 202, .8);
+	background: rgba(202, 202, 202, .5);
 	color: #000;
 }
 
@@ -129,16 +166,16 @@
 
 
 .b-form-lecture-edit {
-	font-size: 12px;
-	display: none;
 	position: absolute;
-	border: 1px solid #71a9ff;
-	background: #a5d3ff;
+	display: none;
 	padding: 10px;
-	border-radius: 5px;
 	width: 180px;
+	border: 1px solid #71a9ff;
+	border-radius: 5px;
+	background: #a5d3ff;
 	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
 	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	font-size: 12px;
 }
 .b-form__field-wrapper {
 	padding-bottom: 4px;
@@ -147,9 +184,9 @@
 	padding-bottom: 0;
 }
 .b-form__field-label {
+	display: block;
 	vertical-align: top;
 	line-height: 16px;
-	display: block;
 }
 .b-form__field-input {
 	border: 1px solid rgba(128, 128, 128, .5);
@@ -162,6 +199,14 @@
 	background: #ffc7ca;
 }
 .b-form__field_textarea {
+}
+.b-form__close {
+	position: absolute;
+	top: -7px;
+	right: -7px;
+	border-radius: 50%;
+	background: #fff;
+	cursor: pointer;
 }
 
 

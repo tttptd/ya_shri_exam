@@ -18,7 +18,7 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		valid: 				false
 	}, dataObj );
 
-	this.$element = $( '<div class="b-lecture"><div class="b-lecture__subject">&nbsp;</div><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div></div>' ); // DOM-элемент
+	this.$element = $( '<div class="b-lecture"><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div><div class="b-lecture__subject">&nbsp;</div></div>' ); // DOM-элемент
 	this.$element.data( 'id', dataObj.id );
 
 	this.$elements = {

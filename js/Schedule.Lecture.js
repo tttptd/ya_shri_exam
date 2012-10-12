@@ -15,7 +15,8 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		thesis: 			'',
 		presentation: '',
 		reporter: 		null,
-		valid: 				false
+		valid: 				false,
+		dead: 				false
 	}, dataObj );
 
 	this.$element = $( '<div class="b-lecture" draggable="true"><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div><div class="b-lecture__subject">&nbsp;</div></div>' ); // DOM-элемент
@@ -56,13 +57,14 @@ Schedule.Lecture.prototype.render = function( $applyTo ) {
  * @return this
  */
 Schedule.Lecture.prototype.edit = function() {
+	var editor = Schedule.LectureEditor.getInstance();
 	this.$element.addClass( 'b-lecture_active' );
-	Schedule.LectureEditor.getInstance()
+	editor
 		.clear()
 		.load( this.data() )
 		.attachTo( this.$element )
-		.show()
-		.form()
+		.show();
+	$( editor )
 		.on({
 			change: $.proxy( function( event ) {
 				var $target = $( event.target ),
@@ -72,7 +74,9 @@ Schedule.Lecture.prototype.edit = function() {
 				this.data( fieldName, fieldValue );
 
 				Schedule.LectureEditor.getInstance().field( fieldName, this.data( fieldName ) );
-
+			}, this ),
+			deleteclick: $.proxy( function() {
+				this.destroy();
 			}, this )
 		});
 
@@ -85,8 +89,10 @@ Schedule.Lecture.prototype.edit = function() {
  * @return this
  */
 Schedule.Lecture.prototype.editorUnbind = function() {
-	var editor = Schedule.LectureEditor.getInstance();
-	editor.form().off( 'change' );
+	var $editor = $( Schedule.LectureEditor.getInstance() );
+	$editor
+		.off( 'change' )
+		.off( 'deleteclick' );
 	this.$element.removeClass( 'b-lecture_active' );
 
 	return this;
@@ -192,7 +198,7 @@ Schedule.Lecture.prototype.data = function( key, value ) {
  * @return {object} dataObj
  */
 Schedule.Lecture.prototype.toJSON = function() {
-	if( this.valid() ) {
+	if( this.valid() && !this.data( 'dead' ) ) {
 		return this.dataObj;
 	}
 }
@@ -203,7 +209,12 @@ Schedule.Lecture.prototype.toJSON = function() {
  * @return {[type]} [description]
  */
 Schedule.Lecture.prototype.destroy = function() {
-	console.log(this, ' дестрой');
+	Schedule.LectureEditor.getInstance().hide();
+	this.editorUnbind();
+	this.data( 'dead', true ); // Пометим запись флагом мертвеца, чтобы при следующей сериализации её не возвращать
+	this.$element.remove();
+	delete this;
+	$(this).trigger( 'delete' );
 }
 
 

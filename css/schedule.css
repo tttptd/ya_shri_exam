@@ -200,12 +200,17 @@
 }
 .b-form__field_textarea {
 }
+
 .b-form__close {
 	position: absolute;
+	cursor: pointer;
 	top: -7px;
 	right: -7px;
 	border-radius: 50%;
 	background: #fff;
+}
+
+.b-form__remove-lecture {
 	cursor: pointer;
 }
 

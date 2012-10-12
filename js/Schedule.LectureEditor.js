@@ -1,7 +1,6 @@
 Schedule.LectureEditor = (function () {
 
 	var instance;
-
 	/**
 	 * [init description]
 	 * @return {[type]} [description]
@@ -35,6 +34,7 @@ Schedule.LectureEditor = (function () {
 							'<label for="lecture-edit-thesis" class="b-form__field-label b-form__field-label_newline">Тезисы:</label>' +
 							'<textarea name="thesis" id="lecture-edit-thesis" class="b-form__field-input  b-form__field-input_maxwidth b-form__field_textarea"></textarea>' +
 						'</div>' +
+						'<i class="icon-trash b-form__remove-lecture" title="Удалить лекцию"></i>' +
 					'</form>' +
 				'' )
 		;
@@ -43,18 +43,32 @@ Schedule.LectureEditor = (function () {
 		$editForm = $( '.b-form' );
 		$fields = $editForm.find('*[name]');
 
-		$editForm.keydown( function( event ) {
-			// Нажали Escape
-			if( event.keyCode == 27 ) {
-				instance.hide();
-			}
-		});
-
+		// Слушаем события
 		$editForm
+			.keydown( function( event ) {
+				// Нажали Escape
+				if( event.keyCode == 27 ) {
+					instance.hide();
+				}
+			})
+			.on({
+				change: function( event ) {
+					var $event;
+					$event = jQuery.Event( 'change');
+					$event.target = event.target;
+					$( instance ).trigger( $event );
+				}
+			})
 			.find('.b-form__close')
 			.click( function( event ) {
 				instance.hide();
-			});
+			})
+			.end()
+			.find('.b-form__remove-lecture')
+			.click( function( event ) {
+				$( instance ).trigger( 'deleteclick' );
+			})
+		;
 
 
 		return {
@@ -91,7 +105,6 @@ Schedule.LectureEditor = (function () {
 			 */
 			hide: function() {
 				$editForm.fadeOut( 50 );
-				//this.trigger( 'hide' );
 
 				return this;
 			},

@@ -321,6 +321,11 @@ Schedule.Calendar.prototype.addLecture = function( lecture ) {
 
 	if( !this.lectures[ lectureDay ][ lectureId ] ) {
 		this.lectures[ lectureDay ][ lectureId ] = lecture;
+		$( lecture ).on({
+			delete: $.proxy( function( event ) {
+				this.removeLecture( event.target.data( 'id' ) ); // Почикаем лекцию
+			}, this )
+		});
 	}
 	else {
 		console.error( 'Lection with this id [' + lectureId + '] already exists in day [' + lectureDay + ']' );
@@ -340,6 +345,26 @@ Schedule.Calendar.prototype.getLecture = function( lectureId ) {
 
 	$.each( this.lectures, $.proxy( function( key, value ) {
 		if( result = value[ lectureId ] ) {
+			return false;
+		}
+	}, this ) );
+
+	return result;
+}
+
+
+/**
+ * Удаляет лекцию из объекта-хранилища
+ * @param  {number} lectureId id лекции
+ * @return {boolead} true, если нашли и удалили, иначе false
+ */
+Schedule.Calendar.prototype.removeLecture = function( lectureId ) {
+	var result = false;
+
+	$.each( this.lectures, $.proxy( function( key, value ) {
+		if( value[ lectureId ] ) {
+			delete this.lectures[ key ][ lectureId ];
+			result = true;
 			return false;
 		}
 	}, this ) );

@@ -137,11 +137,69 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 	}, this ) );
 
 	// Слушаем события
+	this.$element.click( $.proxy( this.clickHandler, this ) );
+
 	this.$element.on({
-		click: $.proxy( this.calendarOnclick, this )
-	} );
+		dragstart: $.proxy( this.dragDropHandler, this ),
+		dragenter: $.proxy( this.dragDropHandler, this ),
+		dragleave: $.proxy( this.dragDropHandler, this ),
+		dragover: $.proxy( this.dragDropHandler, this ),
+		drop: $.proxy( this.dragDropHandler, this )
+	}, '.' + this.DAY_CLASS );
 
 	return this;
+}
+
+
+
+/**
+ * Обработчик drag & drop событий
+ * @param  {[type]} event [description]
+ * @return {[type]}       [description]
+ */
+Schedule.Calendar.prototype.dragDropHandler = function( event ) {
+	var dragItemId, lecture,
+			$target = $( event.target );
+
+	switch( event.type ) {
+		// Схватили объектz
+		case 'dragstart':
+			dragItemId = $target.data( 'id' );
+			event.originalEvent.dataTransfer.setData( 'text/plain', dragItemId );
+			break;
+
+		// Проносим...
+		case 'dragenter':
+			return false;
+			break;
+
+		// Уносим...
+		case 'dragleave':
+			return false;
+			break;
+
+		// Бросили объект
+		case 'drop':
+			if( !$target.hasClass( this.LECTURES_CONTAINER_CLASS ) ) {
+				if( $target.hasClass( this.DAY_CLASS ) ) {
+					$target = $target.find( '.' + this.LECTURES_CONTAINER_CLASS );
+				}
+				else {
+					$target = $target.parents( '.' + this.DAY_CLASS).find ( '.' + this.LECTURES_CONTAINER_CLASS );
+				}
+			}
+			dragItemId = event.originalEvent.dataTransfer.getData( 'text/plain' );
+			lecture = this.getLecture( dragItemId );
+			lecture.element().appendTo( $target ); // Переносим объект, куда бросили
+			lecture.data( 'day', $target.data( 'day' ) ); // Меняем значение дня
+			return false;
+			break;
+
+		default:
+			return false;
+			break;
+	}
+
 }
 
 
@@ -149,7 +207,7 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
  * Обработчик клика по календарю
  * @param  {[type]} event [description]
  */
-Schedule.Calendar.prototype.calendarOnclick = function( event ) {
+Schedule.Calendar.prototype.clickHandler = function( event ) {
 	var lecture, $lecture, showEditor = true,
 			$target = $( event.target ),
 			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS;
@@ -209,8 +267,6 @@ Schedule.Calendar.prototype.load = function() {
 			}, this ) );
 		}, this ) );
 	}
-
-	console.log(this);
 
 	return this;
 }

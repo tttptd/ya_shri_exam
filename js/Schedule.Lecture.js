@@ -18,7 +18,7 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		valid: 				false
 	}, dataObj );
 
-	this.$element = $( '<div class="b-lecture"><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div><div class="b-lecture__subject">&nbsp;</div></div>' ); // DOM-элемент
+	this.$element = $( '<div class="b-lecture" draggable="true"><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div><div class="b-lecture__subject">&nbsp;</div></div>' ); // DOM-элемент
 	this.$element.data( 'id', dataObj.id );
 
 	this.$elements = {
@@ -166,7 +166,6 @@ Schedule.Lecture.prototype.data = function( key, value ) {
 
 			// Событие вызывается, только если данные валидны
 			if( this.valid() && $.inArray( key, [ 'id', 'valid' ] ) == -1 ) {
-				console.log( 'change fire: ', key, value );
 				$( this ).trigger( 'change', [
 					{
 						key: key,

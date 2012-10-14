@@ -1,6 +1,7 @@
-
-
-
+/**
+ * ОБъект времени
+ * @param {object | string} data время в виде строки 15:36 или в виде объекта { hour, min, sec }
+ */
 Schedule.Time = function( data ) {
 	if( typeof data == 'string' ) {
 		this.parse( data );
@@ -13,12 +14,12 @@ Schedule.Time = function( data ) {
 
 
 /**
- * [set description]
+ * Сеттер. Меняет данные объекта
  * @param {string} key = hour | min | sec | longsec (0 .. 86400)
  * @param {number} value 0..59
+ * @return this
  */
 Schedule.Time.prototype.set = function( key, value ) {
-
 	value = +value || 0;
 	key = '' + key;
 
@@ -39,11 +40,12 @@ Schedule.Time.prototype.set = function( key, value ) {
 
 /**
  * Парсит строку со временем, типа: hh:mm или hh:mm:ss
- * @param  {[type]} string [description]
- * @return {[type]}        [description]
+ * @param  {string} string строка для разбора
+ * @return {object} { hour, min, sec }
  */
 Schedule.Time.prototype.parse = function( string ) {
 	var result = /([0-9]{1,2}):*([0-9]{0,2}):*([0-9]{0,2})/ig.exec( string );
+
 	if( result ) {
 		if( result[ 1 ] ) {
 			this.set( 'hour', result[ 1 ] );
@@ -60,25 +62,23 @@ Schedule.Time.prototype.parse = function( string ) {
 }
 
 
-
 /**
- * [toString description]
- * @param  {number} length длина = 1 .. 3, 1 - h, 2 - h:mm, 3 - h:mm:ss. По умолчанию = 2
- * @return {[type]}        [description]
+ * Преобразовывает внутренее представление объекта в строку
+ * @param  {number} mode режим преобразования = 1 .. 3, 1 - h, 2 - h:mm, 3 - h:mm:ss. По умолчанию = 2
+ * @return {string}
  */
-Schedule.Time.prototype.toString = function( length ) {
+Schedule.Time.prototype.toString = function( mode ) {
 	var valueTmp = this.valueOf();
 
-	length = length || 2;
+	mode = mode || 2;
 
-	return this.hour + ( length > 1 ? ':' + ( this.min <= 9 ? '0' + this.min : this.min ) + ( length > 2 ? ':' + ( this.sec <= 9 ? '0' + this.sec : this.sec ) : '' ) : '' )
+	return this.hour + ( mode > 1 ? ':' + ( this.min <= 9 ? '0' + this.min : this.min ) + ( mode > 2 ? ':' + ( this.sec <= 9 ? '0' + this.sec : this.sec ) : '' ) : '' )
 }
 
 
-
 /**
- * [valueOf description]
- * @return {[type]} [description]
+ * Преобразовывает объект в number, возвращает время от 0:00, в миллисекундах
+ * @return {number}
  */
 Schedule.Time.prototype.valueOf = function() {
 

@@ -1,6 +1,6 @@
 .b-header {
-	font-size: 26px;
 	padding: 60px 40px 20px;
+	font-size: 26px;
 }
 
 
@@ -15,8 +15,8 @@
 
 
 .b-list {
-	padding: 0;
 	margin: 0;
+	padding: 0;
 	list-style: none;
 }
 .b-list__item {
@@ -26,16 +26,16 @@
 
 
 .b-switcher {
-	padding-bottom: 40px;
 	margin-left: -10px;
+	padding-bottom: 40px;
 }
 .b-switcher__mode {
-	padding: 7px 10px 5px;
 	margin-right: 8px;
+	padding: 7px 10px 5px;
 }
 .b-switcher__mode_active {
-	background: #ddd;
 	border-radius: 8px;
+	background: #ddd;
 }
 .b-switcher__mode_active .b-local,
 .b-switcher__mode_active .b-local:hover {
@@ -47,9 +47,9 @@
 
 .b-export,
 .b-import {
+	position: relative;
 	padding-right: 20px;
 	font-size: 12px;
-	position: relative;
 }
 .b-export {
 	margin-left: 100px;
@@ -57,16 +57,16 @@
 .b-export__field,
 .b-import__field {
 	position: absolute;
-	z-index: 99;
-	left: 0;
 	top: 12px;
+	left: 0;
+	z-index: 99;
 	display: none;
+	padding: 4px;
 	width: 300px;
 	height: 300px;
-	font-size: 10px;
 	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
 	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
-	padding: 4px;
+	font-size: 10px;
 }
 
 
@@ -222,10 +222,10 @@
 	padding: 4px;
 }
 .b-view-list__item {
-	font-size: 12px;
-	background: none;
 	border: 0;
+	background: none;
 	vertical-align: top;
+	font-size: 14px;
 	cursor: default;
 }
 .b-view-list__item:hover {
@@ -233,8 +233,8 @@
 }
 .b-day-in-list .b-day__name {
 	padding: 4px;
-	text-align: left;
 	background: none repeat scroll 0 0 rgba(255, 244, 147, 0.3);
+	text-align: left;
 }
 .b-day-in-list .b-day__dayofmonth {
 	font-size: 16px;
@@ -246,6 +246,7 @@
 
 .b-form {
 	position: absolute;
+	z-index: 99;
 	display: none;
 	padding: 10px;
 	width: 180px;
@@ -255,7 +256,6 @@
 	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
 	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
 	font-size: 12px;
-	z-index: 99;
 }
 .b-form__field-wrapper {
 	padding-bottom: 4px;
@@ -283,17 +283,15 @@
 
 .b-form__close-btn {
 	position: absolute;
-	cursor: pointer;
 	top: -7px;
 	right: -7px;
 	border-radius: 50%;
 	background: #fff;
+	cursor: pointer;
 }
 
 .b-form__remove-lecture-btn {
 	cursor: pointer;
 }
-
-
 
 

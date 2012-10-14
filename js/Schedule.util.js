@@ -1,4 +1,9 @@
+/**
+ * Утиль для работы с датами
+ */
+
 Schedule.util = {};
+
 
 Schedule.util.MONTH_NAMES = {
 	ru: {
@@ -17,8 +22,6 @@ Schedule.util.DAYSOFWEEK = {
 }
 
 
-
-
 /**
  * Возвращает название месяца
  *
@@ -30,6 +33,7 @@ Schedule.util.DAYSOFWEEK = {
 Schedule.util.getMonthName = function( monthNum, type, lang ) {
 	type = type || 'full';
 	lang = lang || 'ru';
+
 	if( monthNum >= 0 && monthNum <= 11 ) {
 		return this.MONTH_NAMES[ lang ][ type ][ monthNum ];
 	}
@@ -49,6 +53,7 @@ Schedule.util.getMonthName = function( monthNum, type, lang ) {
 Schedule.util.getDayOfWeekName = function( dayOfWeekNum, type, lang ) {
 	type = type || 'short';
 	lang = lang || 'ru';
+
 	if( dayOfWeekNum >= 0 && dayOfWeekNum <= 6 ) {
 		return this.DAYSOFWEEK[ lang ][ type ][ dayOfWeekNum ];
 	}

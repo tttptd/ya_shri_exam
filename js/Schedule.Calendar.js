@@ -1,7 +1,9 @@
 /**
- * Schedule.calendar
+ * Класс календаря
+ * @constructor
+ * @param {$element} $applyTo элемент, в который вставляем календарь
+ * @param {object} config конфигурация { fromDt, tillDt }
  */
-
 Schedule.Calendar = function( $applyTo, config ) {
 	var defaultConfig = {
 				fromDt: new Date( 2010, 8 ), // Дата начала календаря
@@ -21,7 +23,6 @@ Schedule.Calendar = function( $applyTo, config ) {
 	this.renderTemplate( $applyTo );
 
 	this.updateCalendarData( 'calendar' );
-	//this.updateCalendarData( 'list' );
 }
 
 
@@ -116,7 +117,7 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 
 /**
  * Рендерит календарную сетку
- * @param  {[type]} $applyTo [description]
+ * @param  {$element} $applyTo элемент, в котором рисовать сетку
  * @return this
  */
 Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
@@ -152,6 +153,7 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 		}
 		calendarData.months.push( monthData );
 	}
+
 
 	// Вставляем сформированный html в dom
 	$applyTo.html( this.CALENDAR_TEMPLATE( calendarData ) );
@@ -288,7 +290,7 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
 
 /**
  * Обработчик клика по календарю
- * @param  {[type]} event [description]
+ * @param  {умуте} event
  */
 Schedule.Calendar.prototype.clickHandler = function( event ) {
 	var lecture, $lecture, $exportImportLink, $modeTmp,
@@ -303,11 +305,13 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 	if( $target.hasClass( this.CALENDAR_LECTURES_CONTAINER_CLASS ) ) {
 		lecture = this.createLecture( $target );
 	}
+
 	// Кликнули на кнопочку "Добавить"
 	else if( $target.hasClass( this.BTN_ADD_LECTURE_CLASS ) ) {
 		lecture = this.createLecture( $target.parents( '.' + this.DAY_CLASS ).find( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS ) );
 		showEditor = false;
 	}
+
 	// Кликнули на лекцию
 	else if( ( $target.hasClass( lectureClassTmp ) && ( $lecture = $target ) ) || $target.parents( '.' + lectureClassTmp ).length ) {
 		if( !$lecture ) {
@@ -315,10 +319,12 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 		}
 		lecture = this.getLecture( $lecture.data( 'id' ) );
 	}
+
 	// Клик по ссылке
 	else if( $target.context.nodeName.toLowerCase() == 'a' ) {
 		this.lastLecture && this.lastLecture.editorUnbind();
 		Schedule.LectureEditor.getInstance().hide();
+
 		// Кликнули на импорт или экспорт
 		if( $target.parent( '.' + this.BTN_EXPORT_CLASS ).length ) {
 			this.importField.hide();
@@ -329,6 +335,7 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 			this.exportField.hide();
 			this.importField.toggle();
 		}
+
 		// Кликнули на переключалку режимов
 		else if( $target.parents( '.' + this.BTN_SWITCHER_CLASS ).length ) {
 			$target = $target.parents( '.' + this.BTN_SWITCHER_CLASS );
@@ -364,7 +371,7 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 
 /**
  * Получаем данные из localStorage
- * @return {[type]} [description]
+ * @return {object}
  */
 Schedule.Calendar.prototype.getStorageData = function() {
 
@@ -384,8 +391,8 @@ Schedule.Calendar.prototype.save = function() {
 
 
 /**
- * Загружаем из localStorage в объект-хранилище
- * @param  {object} data в экспортируемом формате
+ * Загружаем из localStorage или переданного объекта данные, в объект-хранилище
+ * @param  {object} data в экспортируемом формате. Если не указана, то загружаются из localStorage
  * @return this
  */
 Schedule.Calendar.prototype.load = function( data ) {
@@ -399,6 +406,7 @@ Schedule.Calendar.prototype.load = function( data ) {
 			alert( 'Ошибка парсинга JSON' );
 			return false;
 		}
+
 		this.cleanLectures();
 		$.each( data, $.proxy( function( key, day ) {
 			$.each( day, $.proxy( function( key, lectureData ) {
@@ -463,6 +471,9 @@ Schedule.Calendar.prototype.addLecture = function( lecture ) {
 		$( lecture ).on({
 			delete: $.proxy( function( event ) {
 				this.removeLecture( event.target.data( 'id' ) ); // Почикаем лекцию
+				if( jQuery.isEmptyObject( this.lectures[ lectureDay ] ) ) { // А если день больше не содержит лекций, прибьём и его
+					delete this.lectures[ lectureDay ];
+				}
 			}, this )
 		});
 	}
@@ -476,7 +487,7 @@ Schedule.Calendar.prototype.addLecture = function( lecture ) {
 
 /**
  * Очищает объект-хранилище лекций
- * @return {[type]} [description]
+ * @return this
  */
 Schedule.Calendar.prototype.cleanLectures = function() {
 	this.lectures = {};

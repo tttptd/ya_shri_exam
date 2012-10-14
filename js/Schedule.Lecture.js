@@ -1,8 +1,8 @@
-
 /**
- * [Lecture description]
+ * Класс лекции
+ * @constructor
  * @param {object} data     данные лекции
- * @param {[type]} $applyTo родительский элемент, куда вставить элемент лекции. Может быть undefined, тогда render не вызывается
+ * @param {$element} $applyTo родительский элемент, куда вставить элемент лекции. Может быть undefined, тогда render не вызывается
  */
 Schedule.Lecture = function( dataObj, $applyTo ) {
 	this.dataObj = {};
@@ -38,6 +38,7 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		});
 	}, this ) );
 
+	// Соответствия полей данных и классов в шаблонах, и функций-конвертеров данных для вывода
 	this.$elements = {
 		subject: {
 			selector: '.b-lecture__subject'
@@ -112,8 +113,10 @@ Schedule.Lecture.prototype.edit = function() {
 		.load( this.data() )
 		.attachTo( $elementTmp )
 		.show();
+
 	$( editor )
 		.on({
+			// Поля в форме изменились
 			change: $.proxy( function( event ) {
 				var $target = $( event.target ),
 						fieldName = $target.prop( 'name' ),
@@ -123,6 +126,7 @@ Schedule.Lecture.prototype.edit = function() {
 
 				Schedule.LectureEditor.getInstance().field( fieldName, this.data( fieldName ) );
 			}, this ),
+			// Кликнули на кнопку удаления лекции
 			deleteclick: $.proxy( function() {
 				this.destroy();
 			}, this )
@@ -133,7 +137,7 @@ Schedule.Lecture.prototype.edit = function() {
 
 
 /**
- * [editorUnbind description]
+ * Отвязывает форму редактирования от лекции
  * @return this
  */
 Schedule.Lecture.prototype.editorUnbind = function() {
@@ -151,7 +155,7 @@ Schedule.Lecture.prototype.editorUnbind = function() {
 /**
  * Возвращает верхний dom-элемент лекции
  * @param  {string} view с каким видом работаем, calendar по умолчанию
- * @return {[type]} [description]
+ * @return {$element}
  */
 Schedule.Lecture.prototype.element = function( view ) {
 
@@ -175,7 +179,6 @@ Schedule.Lecture.prototype.valid = function( valid ) {
 		return this.data( 'valid' );
 	}
 }
-
 
 
 /**
@@ -216,7 +219,6 @@ Schedule.Lecture.prototype.data = function( key, value ) {
 					value = new Schedule.Time( value );
 					break;
 				default:
-					// @TODO тримить строки
 					break;
 			}
 			this.dataObj[ key ] = value;
@@ -268,8 +270,7 @@ Schedule.Lecture.prototype.toJSON = function() {
 
 
 /**
- * [destroy description]
- * @return {[type]} [description]
+ * Убивает лекцию и вызывает событие delete
  */
 Schedule.Lecture.prototype.destroy = function() {
 	Schedule.LectureEditor.getInstance().hide();

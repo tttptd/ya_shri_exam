@@ -1,14 +1,17 @@
+/**
+ * Форма редактирования лекции.
+ * Синглтон
+ */
 Schedule.LectureEditor = (function () {
 
 	var instance;
 
+
 	/**
-	 * [init description]
-	 * @return {[type]} [description]
+	 * Инициализация
+	 * @return {object} Публичные методы и свойства
 	 */
 	function init() {
-
-
 		var	$form, $fields,
 				FORM_TEMPLATE = Handlebars.compile( '' +
 					'<form class="b-form b-form__lecture-edit">' +
@@ -37,8 +40,7 @@ Schedule.LectureEditor = (function () {
 						'</div>' +
 						'<i class="icon-trash b-form__remove-lecture-btn" title="Удалить лекцию"></i>' +
 					'</form>' +
-				'' )
-		;
+				'' );
 
 		$( 'body' ).append( FORM_TEMPLATE() );
 		$form = $( '.b-form__lecture-edit' );
@@ -124,8 +126,8 @@ Schedule.LectureEditor = (function () {
 
 			/**
 			 * Выставляет значение value в поле name
-			 * @param {string} name  [description]
-			 * @param {string} value [description]
+			 * @param {string} name  имя поля
+			 * @param {string} value значение
 			 * @return this
 			 */
 			field: function( name, value ) {
@@ -155,8 +157,8 @@ Schedule.LectureEditor = (function () {
 
 
 			/**
-			 * [valid description]
-			 * @return {Boolean} [description]
+			 * Проверяет валидность формы
+			 * @return {Boolean}
 			 */
 			valid: function() {
 
@@ -166,7 +168,7 @@ Schedule.LectureEditor = (function () {
 
 			/**
 			 * Позиционирует форму, относительно $element
-			 * @param  {[type]} $element [description]
+			 * @param  {$element} $element
 			 * @return this
 			 */
 			attachTo: function( $element ) {
@@ -184,9 +186,10 @@ Schedule.LectureEditor = (function () {
 	}
 
 	return {
+
 		/**
-		 * [getInstance description]
-		 * @return {[type]} [description]
+		 * Возвращает экземпляр синглтона
+		 * @return {object}
 		 */
 		getInstance: function () {
 			if( !instance ) {
@@ -194,6 +197,7 @@ Schedule.LectureEditor = (function () {
 			}
 			return instance;
 		}
+
 	}
 
 })();

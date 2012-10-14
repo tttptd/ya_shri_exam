@@ -1,14 +1,14 @@
-.b-header {
-	padding: 60px 40px 20px;
-	font-size: 26px;
+.b-schedule {
+	padding: 30px 60px;
+	width: 860px;
+	text-align: left;
 }
 
 
 
-
-.b-schedule {
-	padding: 30px 60px;
-	width: 860px;
+.b-header {
+	padding: 60px 0;
+	font-size: 26px;
 }
 
 
@@ -169,7 +169,7 @@
 
 
 .b-day-in-list {
-
+	margin-top: 30px;
 }
 
 

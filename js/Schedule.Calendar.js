@@ -65,6 +65,7 @@ Schedule.Calendar.prototype.BTN_IMPORT_CLASS = 'b-import';
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 	'<div class="b-schedule">' +
+		'<header class="b-header">Расписание занятий в ШРИ</header>' +
 		'<ul class="b-clear b-list b-switcher b-noselect">' +
 			'<li class="b-list__item b-switcher__mode b-switcher__mode_active" data-mode="calendar"><a href="#" class="b-local b-fresh">На календаре</a></li>' +
 			'<li class="b-list__item b-switcher__mode" data-mode="list"><a href="#" class="b-local b-fresh">списком</a></li>' +
@@ -74,7 +75,7 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 			'</li>' +
 			'<li class="b-list__item b-import">' +
 				'<a href="#" class="b-local b-fresh">импорт</a>' +
-				'<textarea class="b-import__field" placeholder="Вставьте данные и нажмите Enter"></textarea>' +
+				'<textarea class="b-import__field" placeholder="Вставьте json и нажмите Enter"></textarea>' +
 			'</li>' +
 		'</ul>' +
 
@@ -85,7 +86,7 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 					'<div class="b-month__days">' +
 						'{{#each days}}' +
 							'<div class="b-day b-day_{{dayOfWeekClass}} b-day-in-list">' +
-								'<div class="b-day__name"><span class="b-day__dayofmonth">{{dayOfMonthName}}</span>, <span class="b-day__dayofweek">{{dayOfWeekName}}</span></div>' +
+								'<div class="b-day__name"><span class="b-day__dayofmonth">{{dayOfMonthName}}</span>, <span class="b-day__dayofweek">{{dayOfWeekNameLong}}</span></div>' +
 								'<table class="b-month__days b-day-list__table">' +
 									'<tbody class="b-day__lectures b-view-list__lectures" data-day="{{day}}">' +
 									'</tbody>' +
@@ -146,6 +147,7 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 			dayData = {
 				dayOfWeekClass: Schedule.util.getDayOfWeekName( dayOfWeekTmp, null, 'en' ),
 				dayOfWeekName: Schedule.util.getDayOfWeekName( dayOfWeekTmp ),
+				dayOfWeekNameLong: Schedule.util.getDayOfWeekName( dayOfWeekTmp, 'long' ),
 				dayOfMonthName: configTmp.fromDt.getDate(),
 				day: configTmp.fromDt.valueOf()
 			};

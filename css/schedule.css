@@ -95,44 +95,10 @@
 
 
 
-.b-day {
-	float: left;
-	overflow: hidden;
-	margin-top: 6px;
-	width: 121px;
-	height: 150px;
-	border-bottom: 1px solid rgba(0, 0, 0, .04);
-	border-left: 1px solid rgba(0, 0, 0, .04);
-}
-.b-day:last-child,
-.b-day_sun {
-	border-right: 1px solid rgba(0, 0, 0, .04);
-}
 .b-day_sat,
 .b-day_sun {
 	background: rgba(0, 0, 0, .03);
 	color: red;
-}
-.b-day_mon {
-	clear: both;
-}
-.b-day_tue:first-child {
-	margin-left: 122px;
-}
-.b-day_wed:first-child {
-	margin-left: 244px;
-}
-.b-day_thu:first-child {
-	margin-left: 366px;
-}
-.b-day_fri:first-child {
-	margin-left: 488px;
-}
-.b-day_sat:first-child {
-	margin-left: 610px;
-}
-.b-day_sun:first-child {
-	margin-left: 732px;
 }
 
 .b-day__name {
@@ -148,6 +114,43 @@
 .b-day__dayofmonth {
 	font-size: 14px;
 }
+
+
+.b-day-in-calendar {
+	float: left;
+	overflow: hidden;
+	margin-top: 6px;
+	width: 121px;
+	height: 150px;
+	border-bottom: 1px solid rgba(0, 0, 0, .04);
+	border-left: 1px solid rgba(0, 0, 0, .04);
+}
+.b-day-in-calendar:last-child,
+.b-day-in-calendar_sun {
+	border-right: 1px solid rgba(0, 0, 0, .04);
+}
+.b-day-in-calendar_mon {
+	clear: both;
+}
+.b-day-in-calendar_tue:first-child {
+	margin-left: 122px;
+}
+.b-day-in-calendar_wed:first-child {
+	margin-left: 244px;
+}
+.b-day-in-calendar_thu:first-child {
+	margin-left: 366px;
+}
+.b-day-in-calendar_fri:first-child {
+	margin-left: 488px;
+}
+.b-day-in-calendar_sat:first-child {
+	margin-left: 610px;
+}
+.b-day-in-calendar_sun:first-child {
+	margin-left: 732px;
+}
+
 .b-day__add-lecture {
 	position: absolute;
 	left: 4px;
@@ -164,6 +167,10 @@
 	cursor: pointer;
 }
 
+
+.b-day-in-list {
+
+}
 
 
 
@@ -208,10 +215,29 @@
 	width: 100%;
 	border-collapse: collapse;
 }
+.b-view-list__lectures {
+	height: auto;
+}
+.b-view-list__lectures td {
+	padding: 4px;
+}
 .b-view-list__item {
-	font-size: 16px;
+	font-size: 12px;
 	background: none;
 	border: 0;
+	vertical-align: top;
+	cursor: default;
+}
+.b-view-list__item:hover {
+	background: #e0e0e0;
+}
+.b-day-in-list .b-day__name {
+	padding: 4px;
+	text-align: left;
+	background: none repeat scroll 0 0 rgba(255, 244, 147, 0.3);
+}
+.b-day-in-list .b-day__dayofmonth {
+	font-size: 16px;
 }
 
 

@@ -26,14 +26,16 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 										'<div class="b-lecture__subject">&nbsp;</div>' +
 									'</div>' ),
 		list: 		$( '<tr class="b-lecture b-view-list__item">' +
-										'<td class="b-lecture__day"></td>' +
-										'<td class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></td>' +
-										'<td class="b-lecture__subject"></td>' +
-										'<td class="b-lecture__presentation"></td>' +
+										'<td class="b-lecture__time" width="100"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></td>' +
+										'<td><div class="b-lecture__subject"></div><div class="b-lecture__reporter"></div></td>' +
+										'<td class="b-lecture__presentation" width="20%"></td>' +
 									'</tr>' )
 	};
 	$.map( this.$element, $.proxy( function( $element ) {
-		$element.data( 'id', dataObj.id );
+		$element.data({
+			'id': dataObj.id,
+			'day': dataObj.day
+		});
 	}, this ) );
 
 	this.$elements = {
@@ -89,6 +91,7 @@ Schedule.Lecture.prototype.LECTURE_EDITABLE_CLASS = 'b-lecture_editable';
  */
 Schedule.Lecture.prototype.render = function( $applyTo, view ) {
 	view = view || 'calendar';
+
 	$applyTo.append( this.$element[ view ] );
 
 	return this;

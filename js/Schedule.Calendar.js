@@ -20,7 +20,8 @@ Schedule.Calendar = function( $applyTo, config ) {
 
 	this.renderTemplate( $applyTo );
 
-	this.updateCalendarData();
+	this.updateCalendarData( 'calendar' );
+	//this.updateCalendarData( 'list' );
 }
 
 
@@ -74,18 +75,33 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 				'<textarea class="b-import__field" placeholder="Вставьте данные и нажмите Enter"></textarea>' +
 			'</li>' +
 		'</ul>' +
-		'<div class="b-view b-view-list">' +
-			'<table class="b-view-list__table">' +
-				'<tbody class="b-view-list__lectures"></tbody>' +
-			'</table>' +
+
+		'<div class="b-view b-view-list" style="display: none;">' +
+			'{{#each months}}' +
+				'<div class="b-month b-clear">' +
+					'<div class="b-month__name">{{monthName}} {{year}}</div>' +
+					'<div class="b-month__days">' +
+						'{{#each days}}' +
+							'<div class="b-day b-day_{{dayOfWeekClass}} b-day-in-list">' +
+								'<div class="b-day__name"><span class="b-day__dayofmonth">{{dayOfMonthName}}</span>, <span class="b-day__dayofweek">{{dayOfWeekName}}</span></div>' +
+								'<table class="b-month__days b-day-list__table">' +
+									'<tbody class="b-day__lectures b-view-list__lectures" data-day="{{day}}">' +
+									'</tbody>' +
+								'</table>' +
+							'</div>' +
+						'{{/each}}' +
+					'</div>' +
+				'</div>' +
+			'{{/each}}' +
 		'</div>' +
+
 		'<div class="b-view b-view-calendar">' +
 			'{{#each months}}' +
 				'<div class="b-month b-clear">' +
 					'<div class="b-month__name">{{monthName}} {{year}}</div>' +
 					'<div class="b-month__days">' +
 						'{{#each days}}' +
-							'<div class="b-day b-day_{{dayOfWeekClass}} b-noselect">' +
+							'<div class="b-day b-day_{{dayOfWeekClass}} b-day-in-calendar_{{dayOfWeekClass}} b-day-in-calendar b-noselect">' +
 								'<div class="b-day__name"><i class="icon-plus-sign b-day__add-lecture" title="Добавить лекцию"></i><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
 								'<div class="b-day__lectures" data-day="{{day}}"></div>' +
 							'</div>' +
@@ -173,7 +189,8 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 				this
 					.load( data ) // Загружаем данные в объект-хранилище
 					.save() // ... и сохраняем в localStorage
-					.updateCalendarData(); // Выводим изменения
+					.updateCalendarData( 'calendar' ) // Выводим изменения
+					.updateCalendarData( 'list' ); // Выводим изменения
 				alert( 'Импорт завершён' );
 				this.importField.prop( 'value', '' ).fadeOut( 50 );
 			}
@@ -187,33 +204,31 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 
 /**
  * Актуализирует расписание в Календаре
+ * @param  {string} view с каким видом работаем
  * @return this
  */
-Schedule.Calendar.prototype.updateCalendarData = function() {
-	var $listLecturesContainer = this.$listViewElement.find( '.' + this.LIST_LECTURES_CONTAINER_CLASS );
+Schedule.Calendar.prototype.updateCalendarData = function( view ) {
+	var $container = ( view == 'calendar' ? this.$calendarViewElement : this.$listViewElement );
 
 	// Добавляем в Календарь
-	this.$days = this.$calendarViewElement.find( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS );
+	this.$days = $container.find( '.' + ( view == 'calendar' ? this.CALENDAR_LECTURES_CONTAINER_CLASS : this.LIST_LECTURES_CONTAINER_CLASS ) );
 	this.$days.each( $.proxy( function( key, dayLectures ) {
 		var lecturesTmp,
 				$dayLectures = $( dayLectures ),
+				$day = $dayLectures.parents( '.' + this.DAY_CLASS )
 				dayTmp = $dayLectures.data( 'day' );
 
 		// Если в хранилище есть лекции на этот день
 		if( lecturesTmp = this.lectures[ dayTmp ] ) {
 			$.each( lecturesTmp, $.proxy( function( lectureId, lecture ) {
-				lecture.render( $dayLectures );
+				lecture.render( $dayLectures, view );
 			}, this) );
+			( view == 'list' ) && $day.show();
 		}
-	}, this ) );
-
-	// Добавляем в список
-	//lecture.render( , 'list' );
-	$.map( this.lectures, $.proxy( function( lectures, day ) {
-		$.map( lectures, $.proxy( function( lecture ) {
-			lecture.render( $listLecturesContainer, 'list' );
-		}, this ) );
-
+		// Нету лекций
+		else {
+			( view == 'list' ) && $day.hide();
+		}
 	}, this ) );
 
 	return this;
@@ -231,7 +246,7 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
 			$target = $( event.target );
 
 	switch( event.type ) {
-		// Схватили объектz
+		// Схватили объект
 		case 'dragstart':
 			dragItemId = $target.data( 'id' );
 			event.originalEvent.dataTransfer.setData( 'text/plain', dragItemId );
@@ -283,7 +298,6 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 
 	event.stopPropagation();
 	event.preventDefault();
-	console.log(event);
 
 	// Кликнули на день
 	if( $target.hasClass( this.CALENDAR_LECTURES_CONTAINER_CLASS ) ) {
@@ -299,7 +313,6 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 		if( !$lecture ) {
 			$lecture = $target.parents( '.' + lectureClassTmp );
 		}
-		console.log($lecture, $lecture.data( 'id' ));
 		lecture = this.getLecture( $lecture.data( 'id' ) );
 	}
 	// Клик по ссылке
@@ -328,6 +341,7 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 			this.$viewElements.map( $.proxy( function( index, element ) {
 				var $element = $( element );
 				if( $element.hasClass( this.VIEW_CLASS + '-' + $modeTmp ) ) { // Нашли вид, на который переключаемся
+					this.updateCalendarData( 'list' );
 					$element.show();
 				}
 				else { // Остальные скрываем
@@ -339,7 +353,6 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 	}
 
 	if( lecture ) {
-		console.log(lecture);
 		this.lastLecture && this.lastLecture.editorUnbind();
 		this.lastLecture = lecture;
 		if( showEditor ) {
@@ -406,14 +419,14 @@ Schedule.Calendar.prototype.load = function( data ) {
 Schedule.Calendar.prototype.createLecture = function( data ) {
 	var lectureData, lecture, $day;
 
-	// В data dom-контейнер для добавления
+	// В data -- dom-контейнер для добавления
 	if( data instanceof $ && data.length ) {
 		$day = data;
 		lectureData = {
 			day: $day.data( 'day' )
 		};
 	}
-	// В data хэш с данными
+	// В data -- хэш с данными
 	else if( !( data instanceof $ ) ) {
 		lectureData = data;
 	}

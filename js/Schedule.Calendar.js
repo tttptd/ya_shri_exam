@@ -23,6 +23,7 @@ Schedule.Calendar = function( $applyTo, config ) {
 	this.renderTemplate( $applyTo );
 
 	this.updateCalendarData( 'calendar' );
+	this.updateCalendarData( 'list' );
 }
 
 

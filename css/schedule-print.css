@@ -1,0 +1,106 @@
+.b-view-calendar,
+.b-switcher {
+	display: none;
+}
+
+.b-view-list {
+	display: block !important;
+}
+
+
+
+.b-header {
+	padding: 60px 0 40px;
+	font-size: 26px;
+}
+
+
+
+.b-month {
+	padding-top: 60px;
+}
+.b-month:first-child {
+	padding-top: 0;
+}
+.b-month__name {
+	padding: 0 0 10px;
+	font-size: 22px;
+}
+
+
+
+.b-day_sat,
+.b-day_sun {
+	background: rgba(0, 0, 0, .03);
+	color: red;
+}
+
+.b-day__name {
+	position: relative;
+	padding: 10px;
+	background: rgba(255, 244, 147, .7);
+	text-align: right;
+	line-height: 14px;
+}
+.b-day__dayofweek {
+	font-size: 11px;
+}
+.b-day__dayofmonth {
+	font-size: 14px;
+}
+
+
+
+.b-lecture {
+	padding: 2px;
+	color: #000;
+}
+
+.b-lecture__time_end:before {
+	content: '—';
+}
+.b-lecture__thesis {
+	font-style: italic;
+}
+.b-lecture__subject {
+	font-weight: bold;
+}
+.b-lecture__subject:before {
+	content: '„';
+	margin-left: -.4em;
+}
+.b-lecture__subject:after {
+	content: '‟';
+}
+
+
+
+.b-view-list__table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.b-view-list__lectures {
+	height: auto;
+}
+.b-view-list__lectures td { /* ;-) */
+	padding: 6px 10px;
+}
+.b-view-list__item {
+	border: 0;
+	background: none;
+	vertical-align: top;
+	font-size: 14px;
+	cursor: default;
+}
+.b-day-in-list .b-day__name {
+	padding: 10px;
+	background: none repeat scroll 0 0 rgba(255, 244, 147, 0.3);
+	text-align: left;
+}
+.b-day-in-list .b-day__dayofmonth {
+	font-size: 16px;
+}
+.b-day-in-list .b-day__dayofweek {
+	font-size: 14px;
+}
+

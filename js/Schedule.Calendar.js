@@ -24,41 +24,32 @@ Schedule.Calendar = function( $applyTo, config ) {
 }
 
 
-Schedule.Calendar.prototype.MONTH_NAMES = {
-	ru: {
-		full: [ 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь' ]
-	}
-}
-
-
-Schedule.Calendar.prototype.DAYSOFWEEK = {
-	en: {
-		short: [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ]
-	},
-	ru: {
-		short: [ 'пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс' ]
-	}
-}
-
-
 // Класс контейнера расписания (без точки!)
 Schedule.Calendar.prototype.SCHEDULE_CLASS = 'b-schedule';
 
 
-// Класс родительского элемента вида Календарь (без точки!)
-Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar';
+// Класс контейнера элемента вида (без точки!)
+Schedule.Calendar.prototype.VIEW_CLASS = 'b-view';
 
 
 // Класс элемента дня (без точки!)
 Schedule.Calendar.prototype.DAY_CLASS = 'b-day';
 
 
-// Класс элемента-контейнера лекций (без точки!)
-Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures';
+// Класс элемента-контейнера лекций вида Календарь (без точки!)
+Schedule.Calendar.prototype.CALENDAR_LECTURES_CONTAINER_CLASS = 'b-day__lectures';
+
+
+// Класс элемента-контейнера лекций вида Список (без точки!)
+Schedule.Calendar.prototype.LIST_LECTURES_CONTAINER_CLASS = 'b-view-list__lectures';
 
 
 // Класс кнопки добавления лекции (без точки!)
 Schedule.Calendar.prototype.BTN_ADD_LECTURE_CLASS = 'b-day__add-lecture';
+
+
+// Класс кнопки переключалки режимов отображения (без точки!)
+Schedule.Calendar.prototype.BTN_SWITCHER_CLASS = 'b-switcher__mode';
 
 
 // Класс кнопки экспорта (без точки!)
@@ -83,8 +74,12 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 				'<textarea class="b-import__field" placeholder="Вставьте данные и нажмите Enter"></textarea>' +
 			'</li>' +
 		'</ul>' +
-		'<div class="b-list"></div>' +
-		'<div class="b-calendar">' +
+		'<div class="b-view b-view-list">' +
+			'<table class="b-view-list__table">' +
+				'<tbody class="b-view-list__lectures"></tbody>' +
+			'</table>' +
+		'</div>' +
+		'<div class="b-view b-view-calendar">' +
 			'{{#each months}}' +
 				'<div class="b-month b-clear">' +
 					'<div class="b-month__name">{{monthName}} {{year}}</div>' +
@@ -122,7 +117,7 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 	while( configTmp.fromDt <= configTmp.tillDt ) {
 		currentMonth = configTmp.fromDt.getMonth();
 		monthData = {
-			monthName: this.getMonthName( currentMonth ),
+			monthName: Schedule.util.getMonthName( currentMonth ),
 			monthOfYear: currentMonth,
 			year: configTmp.fromDt.getFullYear(),
 			days: []
@@ -131,8 +126,8 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 		while( configTmp.fromDt.getMonth() == currentMonth ) {
 			dayOfWeekTmp = configTmp.fromDt.getDay();
 			dayData = {
-				dayOfWeekClass: this.getDayOfWeekName( dayOfWeekTmp, null, 'en' ),
-				dayOfWeekName: this.getDayOfWeekName( dayOfWeekTmp ),
+				dayOfWeekClass: Schedule.util.getDayOfWeekName( dayOfWeekTmp, null, 'en' ),
+				dayOfWeekName: Schedule.util.getDayOfWeekName( dayOfWeekTmp ),
 				dayOfMonthName: configTmp.fromDt.getDate(),
 				day: configTmp.fromDt.valueOf()
 			};
@@ -146,10 +141,9 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
 	$applyTo.html( this.CALENDAR_TEMPLATE( calendarData ) );
 
 	this.$element = $applyTo.find( '.' + this.SCHEDULE_CLASS ); // Контейнер всего расписания
-	this.$calendarViewElement = $applyTo.find( '.' + this.CALENDAR_CLASS ); // Элемент вида Календарь
-	this.$listViewElement = $applyTo.find( '.' + this.LIST_CLASS ); // Элемент вида Список
-
-	this.$currentElement = this.$calendarElement; // Текущий видимый вариант отображения
+	this.$calendarViewElement = $applyTo.find( '.' + this.VIEW_CLASS + '-calendar' ); // Элемент вида Календарь
+	this.$listViewElement = $applyTo.find( '.' + this.VIEW_CLASS + '-list' ); // Элемент вида Список
+	this.$viewElements = $applyTo.find( '.' + this.VIEW_CLASS ); // Все виды
 
 	this.exportField = this.$element.find( '.' + this.BTN_EXPORT_CLASS + '__field' ); // Поле экспорта
 	this.importField = this.$element.find( '.' + this.BTN_IMPORT_CLASS + '__field' ); // Поле импорта
@@ -196,7 +190,10 @@ Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
  * @return this
  */
 Schedule.Calendar.prototype.updateCalendarData = function() {
-	this.$days = this.$calendarViewElement.find( '.' + this.LECTURES_CONTAINER_CLASS );
+	var $listLecturesContainer = this.$listViewElement.find( '.' + this.LIST_LECTURES_CONTAINER_CLASS );
+
+	// Добавляем в Календарь
+	this.$days = this.$calendarViewElement.find( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS );
 	this.$days.each( $.proxy( function( key, dayLectures ) {
 		var lecturesTmp,
 				$dayLectures = $( dayLectures ),
@@ -208,6 +205,15 @@ Schedule.Calendar.prototype.updateCalendarData = function() {
 				lecture.render( $dayLectures );
 			}, this) );
 		}
+	}, this ) );
+
+	// Добавляем в список
+	//lecture.render( , 'list' );
+	$.map( this.lectures, $.proxy( function( lectures, day ) {
+		$.map( lectures, $.proxy( function( lecture ) {
+			lecture.render( $listLecturesContainer, 'list' );
+		}, this ) );
+
 	}, this ) );
 
 	return this;
@@ -243,12 +249,12 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
 
 		// Бросили объект
 		case 'drop':
-			if( !$target.hasClass( this.LECTURES_CONTAINER_CLASS ) ) {
+			if( !$target.hasClass( this.CALENDAR_LECTURES_CONTAINER_CLASS ) ) {
 				if( $target.hasClass( this.DAY_CLASS ) ) {
-					$target = $target.find( '.' + this.LECTURES_CONTAINER_CLASS );
+					$target = $target.find( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS );
 				}
 				else {
-					$target = $target.parents( '.' + this.DAY_CLASS).find ( '.' + this.LECTURES_CONTAINER_CLASS );
+					$target = $target.parents( '.' + this.DAY_CLASS).find ( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS );
 				}
 			}
 			dragItemId = event.originalEvent.dataTransfer.getData( 'text/plain' );
@@ -270,20 +276,22 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
  * @param  {[type]} event [description]
  */
 Schedule.Calendar.prototype.clickHandler = function( event ) {
-	var lecture, $lecture, $exportImportLink,
+	var lecture, $lecture, $exportImportLink, $modeTmp,
 			showEditor = true,
 			$target = $( event.target ),
-			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS;
+			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_EDITABLE_CLASS;
 
 	event.stopPropagation();
+	event.preventDefault();
+	console.log(event);
 
 	// Кликнули на день
-	if( $target.hasClass( this.LECTURES_CONTAINER_CLASS ) ) {
+	if( $target.hasClass( this.CALENDAR_LECTURES_CONTAINER_CLASS ) ) {
 		lecture = this.createLecture( $target );
 	}
 	// Кликнули на кнопочку "Добавить"
 	else if( $target.hasClass( this.BTN_ADD_LECTURE_CLASS ) ) {
-		lecture = this.createLecture( $target.parents( '.' + this.DAY_CLASS ).find( '.' + this.LECTURES_CONTAINER_CLASS ) );
+		lecture = this.createLecture( $target.parents( '.' + this.DAY_CLASS ).find( '.' + this.CALENDAR_LECTURES_CONTAINER_CLASS ) );
 		showEditor = false;
 	}
 	// Кликнули на лекцию
@@ -291,12 +299,14 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 		if( !$lecture ) {
 			$lecture = $target.parents( '.' + lectureClassTmp );
 		}
+		console.log($lecture, $lecture.data( 'id' ));
 		lecture = this.getLecture( $lecture.data( 'id' ) );
 	}
-	// Кликнули на импорт или экспорт
+	// Клик по ссылке
 	else if( $target.context.nodeName.toLowerCase() == 'a' ) {
 		this.lastLecture && this.lastLecture.editorUnbind();
 		Schedule.LectureEditor.getInstance().hide();
+		// Кликнули на импорт или экспорт
 		if( $target.parent( '.' + this.BTN_EXPORT_CLASS ).length ) {
 			this.importField.hide();
 			this.exportField.toggle();
@@ -306,9 +316,30 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 			this.exportField.hide();
 			this.importField.toggle();
 		}
+		// Кликнули на переключалку режимов
+		else if( $target.parents( '.' + this.BTN_SWITCHER_CLASS ).length ) {
+			$target = $target.parents( '.' + this.BTN_SWITCHER_CLASS );
+			if( $target.hasClass( this.BTN_SWITCHER_CLASS + '_active' ) ) { // Кликнули по активной ссылке
+				return false;
+			}
+			$target.parent().find( '.' + this.BTN_SWITCHER_CLASS + '_active' ).removeClass( this.BTN_SWITCHER_CLASS + '_active' );
+			$target.addClass( this.BTN_SWITCHER_CLASS + '_active' );
+			$modeTmp = $target.data( 'mode' )
+			this.$viewElements.map( $.proxy( function( index, element ) {
+				var $element = $( element );
+				if( $element.hasClass( this.VIEW_CLASS + '-' + $modeTmp ) ) { // Нашли вид, на который переключаемся
+					$element.show();
+				}
+				else { // Остальные скрываем
+					$element.hide();
+				}
+			}, this ) );
+
+		}
 	}
 
 	if( lecture ) {
+		console.log(lecture);
 		this.lastLecture && this.lastLecture.editorUnbind();
 		this.lastLecture = lecture;
 		if( showEditor ) {
@@ -477,55 +508,4 @@ Schedule.Calendar.prototype.removeLecture = function( lectureId ) {
 
 	return result;
 }
-
-
-
-
-
-
-
-
-
-
-/**
- * Возвращает название месяца
- *
- * @param  {number} monthNum порядковый номер месяца ( 0 .. 11 )
- * @param  {number} type тип названия ( full )
- * @param  {number} lang на каком языке возвращать ( ru )
- * @return {string} если не нашли, то -1
- */
-Schedule.Calendar.prototype.getMonthName = function( monthNum, type, lang ) {
-	type = type || 'full';
-	lang = lang || 'ru';
-	if( monthNum >= 0 && monthNum <= 11 ) {
-		return this.MONTH_NAMES[ lang ][ type ][ monthNum ];
-	}
-
-	return -1;
-}
-
-
-/**
- * Возвращает название дня недели
- *
- * @param  {number} dayOfWeekNum порядковый номер дня недели ( 0 .. 6 )
- * @param  {number} type тип названия ( short )
- * @param  {number} lang на каком языке возвращать ( ru | en )
- * @return {string} если не нашли, то -1
- */
-Schedule.Calendar.prototype.getDayOfWeekName = function( dayOfWeekNum, type, lang ) {
-	type = type || 'short';
-	lang = lang || 'ru';
-	if( dayOfWeekNum >= 0 && dayOfWeekNum <= 6 ) {
-		return this.DAYSOFWEEK[ lang ][ type ][ dayOfWeekNum ];
-	}
-
-	return -1;
-}
-
-
-
-
-
 

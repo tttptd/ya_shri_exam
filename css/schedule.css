@@ -169,6 +169,8 @@
 
 
 
+
+
 .b-lecture {
 	padding: 2px;
 	border: 1px solid rgba(91, 155, 255, .2);
@@ -199,6 +201,19 @@
 .b-lecture__time_end:before {
 	content: '—';
 }
+
+
+
+.b-view-list__table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.b-view-list__item {
+	font-size: 16px;
+	background: none;
+	border: 0;
+}
+
 
 
 

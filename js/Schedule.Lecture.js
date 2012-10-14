@@ -19,13 +19,50 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		dead: 				false
 	}, dataObj );
 
-	this.$element = $( '<div class="b-lecture" draggable="true"><div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div><div class="b-lecture__subject">&nbsp;</div></div>' ); // DOM-элемент
-	this.$element.data( 'id', dataObj.id );
+	 // DOM-элементы для разных видов
+	this.$element = {
+		calendar: $( '<div class="b-lecture b-lecture_editable" draggable="true">' +
+										'<div class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></div>' +
+										'<div class="b-lecture__subject">&nbsp;</div>' +
+									'</div>' ),
+		list: 		$( '<tr class="b-lecture b-view-list__item">' +
+										'<td class="b-lecture__day"></td>' +
+										'<td class="b-lecture__time"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></td>' +
+										'<td class="b-lecture__subject"></td>' +
+										'<td class="b-lecture__presentation"></td>' +
+									'</tr>' )
+	};
+	$.map( this.$element, $.proxy( function( $element ) {
+		$element.data( 'id', dataObj.id );
+	}, this ) );
 
 	this.$elements = {
-		subject: this.$element.find('.b-lecture__subject'),
-		begin_time: this.$element.find('.b-lecture__time_begin'),
-		end_time: this.$element.find('.b-lecture__time_end')
+		subject: {
+			selector: '.b-lecture__subject'
+		},
+		begin_time: {
+			selector: '.b-lecture__time_begin'
+		},
+		end_time: {
+			selector: '.b-lecture__time_end'
+		},
+		reporter: {
+			selector: '.b-lecture__reporter'
+		},
+		presentation: {
+			selector: '.b-lecture__presentation',
+			convertor: function( value ) {
+				return '<a href="' + value + '">' + value + '</a>';
+			}
+		},
+		day: {
+			selector: '.b-lecture__day',
+			convertor: function( value ) {
+				var date = new Date( +value );
+
+				return date.getDate() + ' ' + Schedule.util.getMonthName( date.getMonth() ) + ', ' + Schedule.util.getDayOfWeekName( date.getDay() );
+			}
+		}
 	};
 
 	this.data( dataObj );
@@ -36,16 +73,23 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 }
 
 
-Schedule.Lecture.prototype.LECTURE_CLASS = 'b-lecture'; // Без точки
+// Класс элемента лекции. Без точки
+Schedule.Lecture.prototype.LECTURE_CLASS = 'b-lecture';
+
+
+// Класс редактируемого элемента лекции. Без точки
+Schedule.Lecture.prototype.LECTURE_EDITABLE_CLASS = 'b-lecture_editable';
 
 
 /**
  * Рендерит элемент лекции
- * @param  {[type]} $applyTo в какой элемент вставляем лекцию
+ * @param  {$node} $applyTo в какой элемент вставляем лекцию
+ * @param  {string} view с каким видом работаем, calendar по умолчанию
  * @return this
  */
-Schedule.Lecture.prototype.render = function( $applyTo ) {
-	$applyTo.append( this.$element );
+Schedule.Lecture.prototype.render = function( $applyTo, view ) {
+	view = view || 'calendar';
+	$applyTo.append( this.$element[ view ] );
 
 	return this;
 }
@@ -56,13 +100,14 @@ Schedule.Lecture.prototype.render = function( $applyTo ) {
  * @return this
  */
 Schedule.Lecture.prototype.edit = function() {
-	var editor = Schedule.LectureEditor.getInstance();
+	var editor = Schedule.LectureEditor.getInstance()
+			$elementTmp = this.$element.calendar; // Т.к. редактировать можно только в календаре
 
-	this.$element.addClass( 'b-lecture_active' );
+	$elementTmp.addClass( this.LECTURE_CLASS + '_active' );
 	editor
 		.clear()
 		.load( this.data() )
-		.attachTo( this.$element )
+		.attachTo( $elementTmp )
 		.show();
 	$( editor )
 		.on({
@@ -90,10 +135,11 @@ Schedule.Lecture.prototype.edit = function() {
  */
 Schedule.Lecture.prototype.editorUnbind = function() {
 	var $editor = $( Schedule.LectureEditor.getInstance() );
+
 	$editor
 		.off( 'change' )
 		.off( 'deleteclick' );
-	this.$element.removeClass( 'b-lecture_active' );
+	this.$element.calendar.removeClass( this.LECTURE_CLASS + '_active' );
 
 	return this;
 }
@@ -101,11 +147,12 @@ Schedule.Lecture.prototype.editorUnbind = function() {
 
 /**
  * Возвращает верхний dom-элемент лекции
+ * @param  {string} view с каким видом работаем, calendar по умолчанию
  * @return {[type]} [description]
  */
-Schedule.Lecture.prototype.element = function() {
+Schedule.Lecture.prototype.element = function( view ) {
 
-	return this.$element;
+	return this.$element[ view || 'calendar' ];
 }
 
 
@@ -138,6 +185,8 @@ Schedule.Lecture.prototype.valid = function( valid ) {
  * @return {value | this}
  */
 Schedule.Lecture.prototype.data = function( key, value ) {
+	var $elementTmp = this.$element.calendar;
+
 	// Ничего не передавали, вернём весь dataObj
 	if( key === undefined ) {
 		return this.dataObj;
@@ -153,10 +202,10 @@ Schedule.Lecture.prototype.data = function( key, value ) {
 			switch( key ) {
 				case 'valid':
 					if( value ) {
-						this.$element.removeClass( 'b-lecture_invalid' );
+						$elementTmp.removeClass( this.LECTURE_CLASS + '_invalid' );
 					}
 					else {
-						this.$element.addClass( 'b-lecture_invalid' );
+						$elementTmp.addClass( this.LECTURE_CLASS + '_invalid' );
 					}
 					break;
 				case 'begin_time':
@@ -168,7 +217,18 @@ Schedule.Lecture.prototype.data = function( key, value ) {
 					break;
 			}
 			this.dataObj[ key ] = value;
-			this.$elements[ key ] && this.$elements[ key ].html( value.toString() );
+			$.map( this.$element, $.proxy( function( $element ) {
+				var $fieldTmp,
+						elementTmp = this.$elements[ key ],
+						valueTmp = ( value ? value.toString() : value );
+
+				if( elementTmp ) {
+					$fieldTmp = $element.find( elementTmp.selector );
+					if( $fieldTmp.length ) {
+						$fieldTmp.html( ( elementTmp.convertor ? elementTmp.convertor( valueTmp ) : valueTmp ) );
+					}
+				}
+			}, this ) );
 
 			// Событие вызывается, только если данные валидны
 			if( this.valid() && $.inArray( key, [ 'id', 'valid' ] ) == -1 ) {
@@ -212,7 +272,9 @@ Schedule.Lecture.prototype.destroy = function() {
 	Schedule.LectureEditor.getInstance().hide();
 	this.editorUnbind();
 	this.data( 'dead', true ); // Пометим запись флагом мертвеца, чтобы при следующей сериализации её не возвращать
-	this.$element.remove();
+	$.map( this.$element, $.proxy( function( $element ) {
+		$element.remove();
+	}, this ) );
 	delete this;
 	$(this).trigger( 'delete' );
 }

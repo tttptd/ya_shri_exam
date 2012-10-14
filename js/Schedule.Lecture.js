@@ -27,8 +27,8 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 									'</div>' ),
 		list: 		$( '<tr class="b-lecture b-view-list__item">' +
 										'<td class="b-lecture__time" width="100"><span class="b-lecture__time_begin"></span><span class="b-lecture__time_end"></span></td>' +
-										'<td><div class="b-lecture__subject"></div><div class="b-lecture__reporter"></div></td>' +
-										'<td class="b-lecture__presentation" width="20%"></td>' +
+										'<td width="500"><div class="b-lecture__subject"></div><div class="b-lecture__reporter"></div><div class="b-lecture__thesis"></div></td>' +
+										'<td class="b-lecture__presentation" width="300"></td>' +
 									'</tr>' )
 	};
 	$.map( this.$element, $.proxy( function( $element ) {
@@ -51,6 +51,9 @@ Schedule.Lecture = function( dataObj, $applyTo ) {
 		},
 		reporter: {
 			selector: '.b-lecture__reporter'
+		},
+		thesis: {
+			selector: '.b-lecture__thesis'
 		},
 		presentation: {
 			selector: '.b-lecture__presentation',

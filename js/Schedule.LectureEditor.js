@@ -28,7 +28,7 @@ Schedule.LectureEditor = (function () {
 						'</div>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-reporter" class="b-form__field-label">Докладчик:</label>' +
-							'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" maxlength="100" pattern="[a-zа-яёA-ZА-ЯЁ\s-]+" />' +
+							'<input type="text" name="reporter" id="lecture-edit-reporter" class="b-form__field-input b-form__field-input_maxwidth" value="" required="required" placeholder="Петя Иванов" maxlength="100" pattern="[\ a-zа-яёA-ZА-ЯЁ-]+" />' +
 						'</div>' +
 						'<div class="b-form__field-wrapper">' +
 							'<label for="lecture-edit-presentation" class="b-form__field-label">Презентация:</label>' +

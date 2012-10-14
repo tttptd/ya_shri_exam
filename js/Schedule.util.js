@@ -14,10 +14,10 @@ Schedule.util.MONTH_NAMES = {
 
 Schedule.util.DAYSOFWEEK = {
 	en: {
-		short: [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ]
+		short: [ 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat' ]
 	},
 	ru: {
-		short: [ 'пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс' ]
+		short: [ 'вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб' ]
 	}
 }
 

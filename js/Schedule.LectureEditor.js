@@ -174,10 +174,10 @@ Schedule.LectureEditor = (function () {
 			attachTo: function( $element ) {
 				var elementOffsetTmp = $element.offset();
 
-				$form.css({
+				$form.animate({
 					left: elementOffsetTmp.left - 20,
 					top: elementOffsetTmp.top - $form.outerHeight() - 4
-				});
+				}, 'fast');
 
 				return this;
 			}

@@ -46,7 +46,6 @@ Schedule.Lecture.prototype.LECTURE_CLASS = 'b-lecture'; // Без точки
  */
 Schedule.Lecture.prototype.render = function( $applyTo ) {
 	$applyTo.append( this.$element );
-	//this.edit();
 
 	return this;
 }
@@ -58,6 +57,7 @@ Schedule.Lecture.prototype.render = function( $applyTo ) {
  */
 Schedule.Lecture.prototype.edit = function() {
 	var editor = Schedule.LectureEditor.getInstance();
+
 	this.$element.addClass( 'b-lecture_active' );
 	editor
 		.clear()

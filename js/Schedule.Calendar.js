@@ -18,7 +18,9 @@ Schedule.Calendar = function( $applyTo, config ) {
 	this.load();
 
 
-	this.render( $applyTo );
+	this.renderTemplate( $applyTo );
+
+	this.updateCalendarData();
 }
 
 
@@ -39,8 +41,12 @@ Schedule.Calendar.prototype.DAYSOFWEEK = {
 }
 
 
-// Класс кнопки добавления лекции (без точки!)
-Schedule.Calendar.prototype.BTN_ADD_LECTURE_CLASS = 'b-day__add-lecture';
+// Класс контейнера расписания (без точки!)
+Schedule.Calendar.prototype.SCHEDULE_CLASS = 'b-schedule';
+
+
+// Класс родительского элемента вида Календарь (без точки!)
+Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar';
 
 
 // Класс элемента дня (без точки!)
@@ -51,29 +57,48 @@ Schedule.Calendar.prototype.DAY_CLASS = 'b-day';
 Schedule.Calendar.prototype.LECTURES_CONTAINER_CLASS = 'b-day__lectures';
 
 
-// Класс родительского элемента расписания (без точки!)
-Schedule.Calendar.prototype.CALENDAR_CLASS = 'b-calendar';
+// Класс кнопки добавления лекции (без точки!)
+Schedule.Calendar.prototype.BTN_ADD_LECTURE_CLASS = 'b-day__add-lecture';
+
+
+// Класс кнопки экспорта (без точки!)
+Schedule.Calendar.prototype.BTN_EXPORT_CLASS = 'b-export';
+
+
+// Класс кнопки импорта (без точки!)
+Schedule.Calendar.prototype.BTN_IMPORT_CLASS = 'b-import';
 
 
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
-	'<div class="b-calendar">' +
-		'<ul class="b-clear b-switcher b-noselect">' +
-			'<li class="b-switcher__mode b-switcher__mode_active" data-mode="calendar"><a href="#" class="b-local b-fresh">На календаре</a></li>' +
-			'<li class="b-switcher__mode" data-mode="list"><a href="#" class="b-local b-fresh">списком</a></li>' +
+	'<div class="b-schedule">' +
+		'<ul class="b-clear b-list b-switcher b-noselect">' +
+			'<li class="b-list__item b-switcher__mode b-switcher__mode_active" data-mode="calendar"><a href="#" class="b-local b-fresh">На календаре</a></li>' +
+			'<li class="b-list__item b-switcher__mode" data-mode="list"><a href="#" class="b-local b-fresh">списком</a></li>' +
+			'<li class="b-list__item b-export">' +
+				'<a href="#" class="b-local b-fresh">экспорт</a>' +
+				'<textarea class="b-export__field"></textarea>' +
+			'</li>' +
+			'<li class="b-list__item b-import">' +
+				'<a href="#" class="b-local b-fresh">импорт</a>' +
+				'<textarea class="b-import__field" placeholder="Вставьте данные и нажмите Enter"></textarea>' +
+			'</li>' +
 		'</ul>' +
-		'{{#each months}}' +
-			'<div class="b-month b-clear">' +
-				'<div class="b-month__name">{{monthName}} {{year}}</div>' +
-				'<div class="b-month__days">' +
-					'{{#each days}}' +
-						'<div class="b-day b-day_{{dayOfWeekClass}} b-noselect">' +
-							'<div class="b-day__name"><i class="icon-plus-sign b-day__add-lecture" title="Добавить лекцию"></i><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
-							'<div class="b-day__lectures" data-day="{{day}}"></div>' +
-						'</div>' +
-					'{{/each}}' +
+		'<div class="b-list"></div>' +
+		'<div class="b-calendar">' +
+			'{{#each months}}' +
+				'<div class="b-month b-clear">' +
+					'<div class="b-month__name">{{monthName}} {{year}}</div>' +
+					'<div class="b-month__days">' +
+						'{{#each days}}' +
+							'<div class="b-day b-day_{{dayOfWeekClass}} b-noselect">' +
+								'<div class="b-day__name"><i class="icon-plus-sign b-day__add-lecture" title="Добавить лекцию"></i><span class="b-day__dayofweek">{{dayOfWeekName}}</span>, <span class="b-day__dayofmonth">{{dayOfMonthName}}</span></div>' +
+								'<div class="b-day__lectures" data-day="{{day}}"></div>' +
+							'</div>' +
+						'{{/each}}' +
+					'</div>' +
 				'</div>' +
-			'</div>' +
-		'{{/each}}' +
+			'{{/each}}' +
+		'</div>' +
 	'</div>' +
 '' );
 
@@ -83,12 +108,12 @@ Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
  * @param  {[type]} $applyTo [description]
  * @return this
  */
-Schedule.Calendar.prototype.render = function( $applyTo ) {
-	var dayObj, monthObj,
+Schedule.Calendar.prototype.renderTemplate = function( $applyTo ) {
+	var dayData, monthData,
 			dayOfWeekTmp, lecturesTmp,
 			configTmp = this.config,
 			currentMonth = configTmp.fromDt.getMonth(),
-			calendarObj = {
+			calendarData = {
 				months: []
 			};
 
@@ -96,7 +121,7 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 	// Обход месяцев
 	while( configTmp.fromDt <= configTmp.tillDt ) {
 		currentMonth = configTmp.fromDt.getMonth();
-		monthObj = {
+		monthData = {
 			monthName: this.getMonthName( currentMonth ),
 			monthOfYear: currentMonth,
 			year: configTmp.fromDt.getFullYear(),
@@ -105,47 +130,85 @@ Schedule.Calendar.prototype.render = function( $applyTo ) {
 		// Обход дней месяца
 		while( configTmp.fromDt.getMonth() == currentMonth ) {
 			dayOfWeekTmp = configTmp.fromDt.getDay();
-			dayObj = {
+			dayData = {
 				dayOfWeekClass: this.getDayOfWeekName( dayOfWeekTmp, null, 'en' ),
 				dayOfWeekName: this.getDayOfWeekName( dayOfWeekTmp ),
 				dayOfMonthName: configTmp.fromDt.getDate(),
 				day: configTmp.fromDt.valueOf()
 			};
-			monthObj.days.push( dayObj )
+			monthData.days.push( dayData )
 			configTmp.fromDt.add( 1 ).days();
 		}
-		calendarObj.months.push( monthObj );
+		calendarData.months.push( monthData );
 	}
 
 	// Вставляем сформированный html в dom
-	$applyTo.html( this.CALENDAR_TEMPLATE( calendarObj ) );
+	$applyTo.html( this.CALENDAR_TEMPLATE( calendarData ) );
 
-	this.$element = $applyTo.find( '.' + this.CALENDAR_CLASS );
+	this.$element = $applyTo.find( '.' + this.SCHEDULE_CLASS ); // Контейнер всего расписания
+	this.$calendarViewElement = $applyTo.find( '.' + this.CALENDAR_CLASS ); // Элемент вида Календарь
+	this.$listViewElement = $applyTo.find( '.' + this.LIST_CLASS ); // Элемент вида Список
 
-	this.$days = this.$element.find( '.' + this.LECTURES_CONTAINER_CLASS );
-	this.$days.each( $.proxy( function( key, day ) {
-		var lecturesTmp,
-				$day = $( day ),
-				dayTmp = $day.data( 'day' );
+	this.$currentElement = this.$calendarElement; // Текущий видимый вариант отображения
 
-		// Если в хранилище есть лекции на этот день
-		if( lecturesTmp = this.lectures[ dayTmp ] ) {
-			$.each( lecturesTmp, $.proxy( function( lectureId, lecture ) {
-				lecture.render( $day );
-			}, this) );
-		}
-	}, this ) );
+	this.exportField = this.$element.find( '.' + this.BTN_EXPORT_CLASS + '__field' ); // Поле экспорта
+	this.importField = this.$element.find( '.' + this.BTN_IMPORT_CLASS + '__field' ); // Поле импорта
+
+
 
 	// Слушаем события
+	// Клики на всём расписании
 	this.$element.click( $.proxy( this.clickHandler, this ) );
 
-	this.$element.on({
+	// Drag & drop в Календаре
+	this.$calendarViewElement.on({
 		dragstart: $.proxy( this.dragDropHandler, this ),
 		dragenter: $.proxy( this.dragDropHandler, this ),
 		dragleave: $.proxy( this.dragDropHandler, this ),
 		dragover: $.proxy( this.dragDropHandler, this ),
 		drop: $.proxy( this.dragDropHandler, this )
 	}, '.' + this.DAY_CLASS );
+
+	// Ловим Enter в поле импорта
+	this.importField.keydown( $.proxy( function( event ) {
+		var data;
+
+		if( event.which == 13 ) {
+			data = $.trim( this.importField.prop( 'value' ) );
+			if( data.length ) {
+				this
+					.load( data ) // Загружаем данные в объект-хранилище
+					.save() // ... и сохраняем в localStorage
+					.updateCalendarData(); // Выводим изменения
+				alert( 'Импорт завершён' );
+				this.importField.prop( 'value', '' ).fadeOut( 50 );
+			}
+			return false;
+		}
+	}, this ) );
+
+	return this;
+}
+
+
+/**
+ * Актуализирует расписание в Календаре
+ * @return this
+ */
+Schedule.Calendar.prototype.updateCalendarData = function() {
+	this.$days = this.$calendarViewElement.find( '.' + this.LECTURES_CONTAINER_CLASS );
+	this.$days.each( $.proxy( function( key, dayLectures ) {
+		var lecturesTmp,
+				$dayLectures = $( dayLectures ),
+				dayTmp = $dayLectures.data( 'day' );
+
+		// Если в хранилище есть лекции на этот день
+		if( lecturesTmp = this.lectures[ dayTmp ] ) {
+			$.each( lecturesTmp, $.proxy( function( lectureId, lecture ) {
+				lecture.render( $dayLectures );
+			}, this) );
+		}
+	}, this ) );
 
 	return this;
 }
@@ -199,7 +262,6 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
 			return false;
 			break;
 	}
-
 }
 
 
@@ -208,7 +270,8 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
  * @param  {[type]} event [description]
  */
 Schedule.Calendar.prototype.clickHandler = function( event ) {
-	var lecture, $lecture, showEditor = true,
+	var lecture, $lecture, $exportImportLink,
+			showEditor = true,
 			$target = $( event.target ),
 			lectureClassTmp = Schedule.Lecture.prototype.LECTURE_CLASS;
 
@@ -230,6 +293,20 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 		}
 		lecture = this.getLecture( $lecture.data( 'id' ) );
 	}
+	// Кликнули на импорт или экспорт
+	else if( $target.context.nodeName.toLowerCase() == 'a' ) {
+		this.lastLecture && this.lastLecture.editorUnbind();
+		Schedule.LectureEditor.getInstance().hide();
+		if( $target.parent( '.' + this.BTN_EXPORT_CLASS ).length ) {
+			this.importField.hide();
+			this.exportField.toggle();
+			this.exportField.html( this.getStorageData() );
+		}
+		else if( $target.parent( '.' + this.BTN_IMPORT_CLASS ).length ) {
+			this.exportField.hide();
+			this.importField.toggle();
+		}
+	}
 
 	if( lecture ) {
 		this.lastLecture && this.lastLecture.editorUnbind();
@@ -238,6 +315,16 @@ Schedule.Calendar.prototype.clickHandler = function( event ) {
 			lecture.edit();
 		}
 	}
+}
+
+
+/**
+ * Получаем данные из localStorage
+ * @return {[type]} [description]
+ */
+Schedule.Calendar.prototype.getStorageData = function() {
+
+	return this.storage.getItem( 'schedule.lectures' );
 }
 
 
@@ -254,13 +341,21 @@ Schedule.Calendar.prototype.save = function() {
 
 /**
  * Загружаем из localStorage в объект-хранилище
+ * @param  {object} data в экспортируемом формате
  * @return this
  */
-Schedule.Calendar.prototype.load = function() {
-	var data = this.storage.getItem( 'schedule.lectures' );
+Schedule.Calendar.prototype.load = function( data ) {
+	data = data || this.getStorageData();
 
 	if( data ) {
-		data = JSON.parse( data );
+		try {
+			data = JSON.parse( data );
+		}
+		catch( error ) {
+			alert( 'Ошибка парсинга JSON' );
+			return false;
+		}
+		this.cleanLectures();
 		$.each( data, $.proxy( function( key, day ) {
 			$.each( day, $.proxy( function( key, lectureData ) {
 				this.createLecture( lectureData );
@@ -288,7 +383,7 @@ Schedule.Calendar.prototype.createLecture = function( data ) {
 		};
 	}
 	// В data хэш с данными
-	else if( !(data instanceof $) ) {
+	else if( !( data instanceof $ ) ) {
 		lectureData = data;
 	}
 
@@ -312,7 +407,7 @@ Schedule.Calendar.prototype.createLecture = function( data ) {
  * @return {number} внутренний id лекции (позицию в массиве)
  */
 Schedule.Calendar.prototype.addLecture = function( lecture ) {
-	var lectureId = lecture.data( 'id' )
+	var lectureId = lecture.data( 'id' ),
 			lectureDay = lecture.data( 'day' );
 
 	if( !this.lectures[ lectureDay ] ) {
@@ -332,6 +427,17 @@ Schedule.Calendar.prototype.addLecture = function( lecture ) {
 	}
 
 	return lectureId;
+}
+
+
+/**
+ * Очищает объект-хранилище лекций
+ * @return {[type]} [description]
+ */
+Schedule.Calendar.prototype.cleanLectures = function() {
+	this.lectures = {};
+
+	return this;
 }
 
 

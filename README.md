@@ -13,3 +13,5 @@ Schedule
 
 Файлик для импорта: data.json.
 Импорт копипастом, в поле Импорт
+
+http://tttptd.github.com/schedule/

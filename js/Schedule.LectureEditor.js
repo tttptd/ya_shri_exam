@@ -44,7 +44,7 @@ Schedule.LectureEditor = (function () {
 
 		$( 'body' ).append( FORM_TEMPLATE() );
 		$form = $( '.b-form__lecture-edit' );
-		$fields = $form.find('*[name]');
+		$fields = $form.find( '*[name]' );
 
 		// Слушаем события
 		$form
@@ -70,8 +70,7 @@ Schedule.LectureEditor = (function () {
 			.find('.b-form__remove-lecture-btn')
 			.click( function( event ) {
 				$( instance ).trigger( 'deleteclick' );
-			})
-		;
+			});
 
 
 		return {

@@ -1,1 +1,1 @@
-Schedule = {};
+var Schedule = {};

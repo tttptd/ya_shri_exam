@@ -63,6 +63,7 @@ Schedule.Calendar.prototype.BTN_EXPORT_CLASS = 'b-export';
 Schedule.Calendar.prototype.BTN_IMPORT_CLASS = 'b-import';
 
 
+// Шаблон календаря
 Schedule.Calendar.prototype.CALENDAR_TEMPLATE = Handlebars.compile( '' +
 	'<div class="b-schedule">' +
 		'<header class="b-header">Расписание занятий в ШРИ</header>' +
@@ -293,7 +294,7 @@ Schedule.Calendar.prototype.dragDropHandler = function( event ) {
 
 /**
  * Обработчик клика по календарю
- * @param  {умуте} event
+ * @param  {event} event
  */
 Schedule.Calendar.prototype.clickHandler = function( event ) {
 	var lecture, $lecture, $exportImportLink, $modeTmp,

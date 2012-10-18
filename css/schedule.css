@@ -1,0 +1,319 @@
+.b-schedule {
+	padding: 30px 60px;
+	width: 860px;
+	text-align: left;
+}
+
+
+
+.b-header {
+	padding: 60px 0;
+	font-size: 26px;
+}
+
+
+
+
+.b-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.b-list__item {
+	display: inline-block;
+}
+
+
+
+.b-switcher {
+	margin-left: -10px;
+	padding-bottom: 40px;
+}
+.b-switcher__mode {
+	margin-right: 8px;
+	padding: 7px 10px 5px;
+}
+.b-switcher__mode_active {
+	border-radius: 8px;
+	background: #ddd;
+}
+.b-switcher__mode_active .b-local,
+.b-switcher__mode_active .b-local:hover {
+	border-bottom: 0;
+	color: #000 !important;
+	cursor: default;
+}
+
+
+.b-export,
+.b-import {
+	position: relative;
+	padding-right: 20px;
+	font-size: 12px;
+}
+.b-export {
+	margin-left: 100px;
+}
+.b-export__field,
+.b-import__field {
+	position: absolute;
+	top: 12px;
+	left: 0;
+	z-index: 99;
+	display: none;
+	padding: 4px;
+	width: 300px;
+	height: 300px;
+	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	font-size: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+.b-month {
+	padding-top: 60px;
+}
+.b-month:first-child {
+	padding-top: 0;
+}
+.b-month__name {
+	padding: 0 0 10px;
+	font-size: 22px;
+}
+
+
+
+
+
+
+
+.b-day_sat,
+.b-day_sun {
+	background: rgba(0, 0, 0, .03);
+	color: red;
+}
+
+.b-day__name {
+	position: relative;
+	padding: 10px;
+	background: rgba(255, 244, 147, .7);
+	text-align: right;
+	line-height: 14px;
+}
+.b-day__dayofweek {
+	font-size: 11px;
+}
+.b-day__dayofmonth {
+	font-size: 14px;
+}
+
+
+.b-day-in-calendar {
+	float: left;
+	overflow: hidden;
+	margin-top: 6px;
+	width: 121px;
+	height: 150px;
+	border-bottom: 1px solid rgba(0, 0, 0, .04);
+	border-left: 1px solid rgba(0, 0, 0, .04);
+}
+.b-day-in-calendar:last-child,
+.b-day-in-calendar_sun {
+	border-right: 1px solid rgba(0, 0, 0, .04);
+}
+.b-day-in-calendar_mon {
+	clear: both;
+}
+.b-day-in-calendar_tue:first-child {
+	margin-left: 122px;
+}
+.b-day-in-calendar_wed:first-child {
+	margin-left: 244px;
+}
+.b-day-in-calendar_thu:first-child {
+	margin-left: 366px;
+}
+.b-day-in-calendar_fri:first-child {
+	margin-left: 488px;
+}
+.b-day-in-calendar_sat:first-child {
+	margin-left: 610px;
+}
+.b-day-in-calendar_sun:first-child {
+	margin-left: 732px;
+}
+
+.b-day__add-lecture {
+	position: absolute;
+	left: 4px;
+	opacity: 0.05;
+	cursor: pointer;
+}
+.b-day:hover .b-day__add-lecture {
+	opacity: 1;
+}
+
+.b-day__lectures {
+	overflow: auto;
+	height: 116px;
+	cursor: pointer;
+}
+
+
+.b-day-in-list {
+	margin-top: 30px;
+}
+
+
+
+
+
+
+
+.b-lecture {
+	padding: 2px;
+	border: 1px solid rgba(91, 155, 255, .2);
+	border-radius: 3px;
+	background: rgba(91, 155, 255, .5);
+	color: #333;
+	font-size: 10px;
+}
+.b-lecture:hover,
+.b-lecture.b-lecture_active {
+	border-color: rgba(91, 155, 255, 1);
+	background: rgba(91, 155, 255, .8);
+}
+.b-lecture_invalid {
+	border-color: rgba(202, 202, 202, .5);
+	background: rgba(202, 202, 202, .2);
+	color: #888;
+}
+.b-lecture_invalid:hover,
+.b-lecture_invalid.b-lecture_active {
+	border-color: rgba(202, 202, 202, .8);
+	background: rgba(202, 202, 202, .5);
+	color: #000;
+}
+
+.b-lecture__time_begin {
+}
+.b-lecture__time_end:before {
+	content: '—';
+}
+.b-lecture__thesis {
+	font-style: italic;
+}
+.b-lecture__subject {
+	font-weight: bold;
+}
+.b-lecture__subject:before {
+	content: '„';
+	margin-left: -.4em;
+}
+.b-lecture__subject:after {
+	content: '‟';
+}
+
+
+
+.b-view-list__table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.b-view-list__lectures {
+	height: auto;
+}
+.b-view-list__lectures td { /* ;-) */
+	padding: 6px 10px;
+}
+.b-view-list__item {
+	border: 0;
+	background: none;
+	vertical-align: top;
+	font-size: 14px;
+	cursor: default;
+}
+.b-view-list__item:hover {
+	background: #e0e0e0;
+}
+.b-day-in-list .b-day__name {
+	padding: 10px;
+	background: rgba(255, 244, 147, 0.3);
+	text-align: left;
+}
+.b-day-in-list .b-day__dayofmonth {
+	font-size: 16px;
+}
+.b-day-in-list .b-day__dayofweek {
+	font-size: 14px;
+}
+
+
+
+
+
+.b-form {
+	position: absolute;
+	z-index: 99;
+	display: none;
+	padding: 10px;
+	width: 180px;
+	border: 1px solid #71a9ff;
+	border-radius: 5px;
+	background: #a5d3ff;
+	-webkit-box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	box-shadow:  0px 10px 30px 10px rgba(0, 0, 0, .2);
+	font-size: 12px;
+}
+.b-form__field-wrapper {
+	padding-bottom: 4px;
+}
+.b-form__field-wrapper:last-child {
+	padding-bottom: 0;
+}
+.b-form__field-label {
+	display: block;
+	vertical-align: top;
+	line-height: 16px;
+}
+.b-form__field-input {
+	border: 1px solid rgba(128, 128, 128, .5);
+	font-size: 10px;
+}
+.b-form__field-input_maxwidth {
+	width: 100%;
+}
+.b-form__field-input:invalid {
+	background: #ffc7ca;
+}
+.b-form__field_textarea {
+}
+
+.b-form__close-btn {
+	position: absolute;
+	top: -7px;
+	right: -7px;
+	border-radius: 50%;
+	background: #fff;
+	cursor: pointer;
+}
+
+.b-form__remove-lecture-btn {
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+

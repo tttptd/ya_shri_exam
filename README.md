@@ -14,4 +14,4 @@ Schedule
 Файлик для импорта: data.json.
 Импорт копипастом, в поле Импорт
 
-Демо: http://tttptd.github.com/schedule/
+Демо: http://tttptd.github.com/ya_shri_exam/
